@@ -1,0 +1,156 @@
+# MTP Presentation Commands Reference
+# =====================================
+# All commands needed to demonstrate the project during the presentation.
+# Copy-paste ready — each block includes the required cd command.
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  1. ACTIVATE THE PYTHON VIRTUAL ENVIRONMENT                    ║
+# ║  (Required before running any Python command)                   ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# This activates the virtual environment with CUDA-enabled PyTorch,
+# all training dependencies, and the Qwen LLM.
+
+cd l:\MTP
+.venv\Scripts\activate
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  2. START THE DESKTOP API SERVER                                ║
+# ║  (FastAPI + Swagger UI for live report generation)              ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Starts the FastAPI server on http://127.0.0.1:8000
+# Swagger interactive docs at: http://127.0.0.1:8000/docs
+# Loads the Qwen2.5-3B LLM + Pneumonia model on startup.
+# Other disease models load on-demand when first requested.
+
+cd l:\MTP
+python -m src.api.main
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  3. API ENDPOINTS (use in Swagger UI or curl)                   ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Health check (verify server is running + GPU active):
+curl http://127.0.0.1:8000/health
+
+# Quick JSON prediction (returns probability only, fast):
+curl -X POST "http://127.0.0.1:8000/predict" -F "file=@test_images\Pneumonia_positive.png" -F "disease=Pneumonia"
+
+# Full professional PDF report with all 4 explainability heatmaps:
+curl -X POST "http://127.0.0.1:8000/analyze/comprehensive" -F "file=@test_images\Pneumonia_positive.png" -F "disease=Pneumonia" --output Pneumonia_report.pdf
+
+# Public simplified report (no heatmaps, plain language):
+curl -X POST "http://127.0.0.1:8000/analyze/public" -F "file=@test_images\Pneumonia_positive.png" -F "disease=Pneumonia" --output Pneumonia_public.pdf
+
+# Batch prediction (multiple diseases, one image):
+curl -X POST "http://127.0.0.1:8000/predict/batch" -F "file=@test_images\Pneumonia_positive.png" -F "diseases=Pneumonia,Atelectasis,Cardiomegaly"
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  4. GENERATE BATCH REPORTS (All 35 Diseases)                    ║
+# ║  (Desktop pipeline — produces 70 PDFs: 1 pos + 1 neg each)     ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Generates full explainability PDF reports for every disease.
+# Output: l:\MTP\experiments\reports\{Disease}_Positive.pdf / _Negative.pdf
+# Takes ~30-60 min on GPU (SAS + IG + Occlusion + CAM per report).
+
+cd l:\MTP
+python generate_all_reports.py
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  5. EXTRACT TEST IMAGES FOR PRESENTATION                       ║
+# ║  (One positive + one negative per disease)                      ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Finds the highest-confidence true positive and true negative test
+# image from each disease dataset and saves to test_images/ folder.
+
+cd l:\MTP
+python extract_test_images.py
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  6. EXPORT ONNX MODELS FOR MOBILE                              ║
+# ║  (Re-export if model weights change)                            ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Exports all 35 models to ONNX format (FP16) with feature_map output.
+# Output: l:\MTP\mobile_app\assets\models\{disease}_mobile.onnx
+
+cd l:\MTP
+python export_mobile.py
+
+# Export CAM classification weights for on-device heatmap generation.
+# Output: l:\MTP\mobile_app\assets\cam_weights\{disease}_cam.bin
+
+cd l:\MTP
+python export_cam_weights.py
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  7. BUILD & INSTALL THE ANDROID APP                             ║
+# ║  (Requires Android SDK + connected device via USB)              ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Build the release APK (bundles all 35 ONNX models + cam weights):
+cd l:\MTP\mobile_app\android
+.\gradlew assembleRelease
+
+# Install on connected Android device:
+cd l:\MTP\mobile_app\android
+"%LOCALAPPDATA%\Android\Sdk\platform-tools\adb" install -r app\build\outputs\apk\release\app-release.apk
+
+# View real-time app logs (useful for debugging during demo):
+"%LOCALAPPDATA%\Android\Sdk\platform-tools\adb" logcat -s "PytorchBridge:*"
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  8. RUN THE MOBILE APP IN DEVELOPMENT MODE                     ║
+# ║  (Hot reload — changes in App.js reflect instantly)             ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Start Metro bundler + deploy to connected device:
+cd l:\MTP\mobile_app
+npx expo run:android
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  9. TRAINING (if needed to retrain a specific model)            ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Train a single disease (example: Pneumonia):
+cd l:\MTP
+python train_merged.py --disease Pneumonia
+
+# Train all 35 diseases sequentially:
+cd l:\MTP
+python train_all.py
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  10. VERIFY ALL DATASETS ARE PROPERLY LOADED                   ║
+# ║  (Pre-flight check before training or report generation)        ║
+# ╚══════════════════════════════════════════════════════════════════╝
+
+# Scans all 10 datasets × 52 disease targets and reports OK/FAIL:
+cd l:\MTP
+python verify_launch.py
+
+
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║  QUICK DEMO SEQUENCE (Recommended presentation order)           ║
+# ╚══════════════════════════════════════════════════════════════════╝
+#
+#  1. Show mobile app on phone → pick image → run inference → show report
+#  2. Open http://127.0.0.1:8000/docs in browser
+#  3. Upload test image via /analyze/comprehensive → download PDF
+#  4. Open the PDF → show SAS, IG, Occlusion, CAM heatmaps
+#  5. Show /predict endpoint → fast JSON response
+#  6. Show /predict/batch → multi-disease screening
+#  7. Show pre-generated reports in l:\MTP\experiments\reports\

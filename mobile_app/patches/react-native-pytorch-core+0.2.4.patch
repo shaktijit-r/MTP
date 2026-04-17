@@ -1,0 +1,367 @@
+diff --git a/node_modules/react-native-pytorch-core/android/.classpath b/node_modules/react-native-pytorch-core/android/.classpath
+new file mode 100644
+index 0000000..bbe97e5
+--- /dev/null
++++ b/node_modules/react-native-pytorch-core/android/.classpath
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17/"/>
++	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
++	<classpathentry kind="output" path="bin/default"/>
++</classpath>
+diff --git a/node_modules/react-native-pytorch-core/android/.project b/node_modules/react-native-pytorch-core/android/.project
+new file mode 100644
+index 0000000..da4aed2
+--- /dev/null
++++ b/node_modules/react-native-pytorch-core/android/.project
+@@ -0,0 +1,34 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>react-native-pytorch-core</name>
++	<comment>Project react-native-pytorch-core created by Buildship.</comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++		<buildCommand>
++			<name>org.eclipse.buildship.core.gradleprojectbuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++		<nature>org.eclipse.buildship.core.gradleprojectnature</nature>
++	</natures>
++	<filteredResources>
++		<filter>
++			<id>1775706967814</id>
++			<name></name>
++			<type>30</type>
++			<matcher>
++				<id>org.eclipse.core.resources.regexFilterMatcher</id>
++				<arguments>node_modules|\.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
++			</matcher>
++		</filter>
++	</filteredResources>
++</projectDescription>
+diff --git a/node_modules/react-native-pytorch-core/android/.settings/org.eclipse.buildship.core.prefs b/node_modules/react-native-pytorch-core/android/.settings/org.eclipse.buildship.core.prefs
+new file mode 100644
+index 0000000..1675490
+--- /dev/null
++++ b/node_modules/react-native-pytorch-core/android/.settings/org.eclipse.buildship.core.prefs
+@@ -0,0 +1,2 @@
++connection.project.dir=../../../android
++eclipse.preferences.version=1
+diff --git a/node_modules/react-native-pytorch-core/android/CMakeLists.txt b/node_modules/react-native-pytorch-core/android/CMakeLists.txt
+index 1ddb161..6101341 100644
+--- a/node_modules/react-native-pytorch-core/android/CMakeLists.txt
++++ b/node_modules/react-native-pytorch-core/android/CMakeLists.txt
+@@ -8,8 +8,9 @@ cmake_minimum_required(VERSION 3.4.1)
+ set (CMAKE_VERBOSE_MAKEFILE ON)
+ 
+ # This should be matched with the Unit Test Build. Please keep them in sync. See ../cxx/test/CMakeLists.txt
+-set (CMAKE_CXX_STANDARD 14)
+-set (CMAKE_CXX_FLAGS "-DFOLLY_NO_CONFIG=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_MEMRCHR=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_MOBILE=1 -DON_ANDROID -DONANDROID")
++set (CMAKE_CXX_STANDARD 17)
++set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFOLLY_NO_CONFIG=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -DFOLLY_HAVE_MEMRCHR=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_MOBILE=1 -DON_ANDROID -DONANDROID")
++set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-shlib-undefined")
+ 
+ set (PACKAGE_NAME "torchlive")
+ set (BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
+@@ -75,6 +76,8 @@ target_include_directories(
+         "${NODE_MODULES_DIR}/react-native/ReactCommon/callinvoker"
+         "${NODE_MODULES_DIR}/react-native/ReactCommon/jsi"
+         "${NODE_MODULES_DIR}/react-native/ReactCommon/runtimeexecutor"
++        "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core/jni"
++        "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/jni/react/turbomodule"
+         "${PYTORCH_INCLUDE_DIRS}"
+         "../cxx/src"
+         "src/main/cpp"
+@@ -82,7 +85,7 @@ target_include_directories(
+ 
+ # find libraries
+ 
+-file (GLOB LIBRN_DIR "${BUILD_DIR}/react-native-0*/jni/${ANDROID_ABI}")
++file (GLOB LIBRN_DIR "${BUILD_DIR}/react-android-*/jni/${ANDROID_ABI}" "${BUILD_DIR}/react-native-*/jni/${ANDROID_ABI}")
+ file (GLOB PYTORCH_LINK_DIRS "${BUILD_DIR}/pytorch_android_lite*.aar/jni/${ANDROID_ABI}")
+ 
+ find_library(
+@@ -99,7 +102,7 @@ find_library(
+ 
+ find_library(
+         REACT_NATIVE_JNI_LIB
+-        reactnativejni
++        NAMES reactnativejni reactnative
+         PATHS ${LIBRN_DIR}
+         NO_CMAKE_FIND_ROOT_PATH
+ )
+diff --git a/node_modules/react-native-pytorch-core/android/build.gradle b/node_modules/react-native-pytorch-core/android/build.gradle
+index c70681a..ee78467 100644
+--- a/node_modules/react-native-pytorch-core/android/build.gradle
++++ b/node_modules/react-native-pytorch-core/android/build.gradle
+@@ -21,7 +21,6 @@ buildscript {
+   if (project == rootProject) {
+     repositories {
+       google()
+-      jcenter()
+       maven {
+         url "https://plugins.gradle.org/m2/"
+       }
+@@ -52,7 +51,7 @@ android {
+     }
+     externalNativeBuild {
+       cmake {
+-        cppFlags "-fexceptions", "-frtti", "-std=c++1y", "-DONANDROID"
++        cppFlags "-fexceptions", "-frtti", "-std=c++17", "-DONANDROID"
+         abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+         arguments '-DANDROID_STL=c++_shared', "-DNODE_MODULES_DIR=${rootDir}/../node_modules", "-DREACT_NATIVE_MINOR_VERSION=${appRnMinorVersion}"
+       }
+@@ -87,9 +86,22 @@ android {
+   }
+ 
+   configurations {
+-    extractHeaders
+-    extractJNI
+-    extractForNativeBuild
++    extractHeaders {
++      canBeResolved = true
++    }
++    extractJNI {
++      canBeResolved = true
++    }
++    extractForNativeBuild {
++      canBeResolved = true
++    }
++  }
++}
++
++// Set attributes for variant selection
++[configurations.extractHeaders, configurations.extractJNI, configurations.extractForNativeBuild].each {
++  it.attributes {
++    attribute(org.gradle.api.attributes.Attribute.of("com.android.build.api.attributes.BuildTypeAttr", String), "release")
+   }
+ }
+ 
+@@ -101,12 +113,13 @@ repositories {
+         url("$rootDir/../node_modules/react-native/android")
+     }
+     google()
+-    jcenter()
+ }
+ 
+ dependencies {
+-  def pytorchLiteVersion = '1.12.2'
+-  implementation "org.pytorch:pytorch_android_lite:${pytorchLiteVersion}"
++  def pytorchLiteVersion = '2.1.0'
++  implementation("org.pytorch:pytorch_android_lite:${pytorchLiteVersion}") {
++    exclude group: 'com.facebook.fbjni', module: 'fbjni-java-only'
++  }
+ 
+   //noinspection GradleDynamicVersion
+   api "com.facebook.react:react-native:+"  // From node_modules
+@@ -124,23 +137,29 @@ dependencies {
+   def buildType = "release"
+ 
+   if (Integer.parseInt(appRnMinorVersion) < 69) {
+-      def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" }).singleFile
+-      extractJNI(files(rnAAR))
+-  } else {
+-      // React Native 0.69
++      def rnAARs = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" })
++      if (!rnAARs.isEmpty()) {
++          extractJNI(files(rnAARs.singleFile))
++      }
++  } else if (Integer.parseInt(appRnMinorVersion) < 71) {
++      // React Native 0.69 - 0.70
+       def rnAarMatcher = "**/react-native/**/*${buildType}.aar"
+-      def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include rnAarMatcher }).singleFile
+-      extractJNI(files(rnAAR))
++      def rnAARs = fileTree("${nodeModules}/react-native/android").matching({ it.include rnAarMatcher })
++      if (!rnAARs.isEmpty()) {
++          extractJNI(files(rnAARs.singleFile))
++      }
++  } else {
++      // React Native 0.71+ uses Maven. We add the dependency to extractJNI configuration.
++      extractJNI("com.facebook.react:react-android:+")
+   }
+ 
+   extractForNativeBuild("org.pytorch:pytorch_android_lite:${pytorchLiteVersion}")
+ 
+   implementation "androidx.appcompat:appcompat:1.2.0"
+-  implementation "com.android.support.constraint:constraint-layout:2.0.4"
+   implementation "androidx.coordinatorlayout:coordinatorlayout:1.1.0"
+ 
+   implementation "androidx.cardview:cardview:1.0.0"
+-  implementation 'com.android.support:support-annotations:28.0.0'
++  implementation 'androidx.annotation:annotation:1.2.0'
+   testImplementation 'junit:junit:4.12'
+   testImplementation 'org.json:json:20140107'
+   testImplementation 'org.mockito:mockito-core:1.10.19'
+@@ -191,15 +210,51 @@ task extractJNIFiles {
+ }
+ 
+ task extractAARForNativeBuild {
++    // Force this task to always run — never trust cache for patched native artifacts
++    outputs.upToDateWhen { false }
++
+     doLast {
+         configurations.extractForNativeBuild.files.each {
+             def file = it.absoluteFile
++            def targetDir = new File("$buildDir/$file.name")
++
++            // Nuke any stale extraction from previous versions
++            if (targetDir.exists()) {
++                delete targetDir
++            }
++
+             copy {
+                 from zipTree(file)
+                 into "$buildDir/$file.name"
+                 include "headers/**"
+                 include "jni/**"
+             }
++            
++            // Post-process the extracted headers to patch NDK 27 STL compatibility
++            def macrosFile = new File("$buildDir/$file.name/headers/c10/macros/Macros.h")
++            if (macrosFile.exists()) {
++                def content = macrosFile.text
++                content = content.replace('__has_trivial_copy(T)', '__is_trivially_copyable(T)')
++                macrosFile.text = content
++            }
++
++            // Fix corrupted ELF dynamic symbol tables for NDK 27 LLD 18
++            // PyTorch prebuilt .so files have STB_LOCAL symbols in the global
++            // partition of .dynsym. llvm-objcopy can't fix .dynsym, so we use
++            // a Python script to directly patch the ELF binary.
++            def fixScript = new File(rootDir, "../fix_elf_dynsym.py")
++            if (fixScript.exists()) {
++                fileTree(dir: "$buildDir/$file.name/jni", include: "**/*.so").each { soFile ->
++                    def args = new ArrayList<String>()
++                    args.add("python")
++                    args.add(fixScript.absolutePath.toString())
++                    args.add(soFile.absolutePath.toString())
++                    def proc = new ProcessBuilder(args).redirectErrorStream(true).start()
++                    def output = proc.inputStream.text
++                    proc.waitFor()
++                    if (output.trim()) println output.trim()
++                }
++            }
+         }
+     }
+ }
+diff --git a/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2D.java b/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2D.java
+index fea4938..874c6c7 100644
+--- a/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2D.java
++++ b/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2D.java
+@@ -21,7 +21,6 @@ import android.text.TextPaint;
+ import android.util.DisplayMetrics;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.uimanager.PixelUtil;
+-import com.facebook.react.uimanager.ReactInvalidPropertyException;
+ import java.util.Stack;
+ import org.pytorch.rn.core.image.IImage;
+ 
+@@ -104,7 +103,7 @@ public class CanvasRenderingContext2D {
+     mTextFillPaint.setStrokeWidth(strokeWidth);
+   }
+ 
+-  public void setLineCap(String lineCap) throws ReactInvalidPropertyException {
++  public void setLineCap(String lineCap) throws IllegalArgumentException {
+     Paint.Cap cap = null;
+     switch (lineCap) {
+       case "butt":
+@@ -117,7 +116,7 @@ public class CanvasRenderingContext2D {
+         cap = Paint.Cap.SQUARE;
+         break;
+       default:
+-        throw new ReactInvalidPropertyException("lineCap", lineCap, "butt | round | square");
++        throw new IllegalArgumentException("lineCap: " + lineCap + ". Expected butt | round | square");
+     }
+ 
+     Paint.Cap strokeCap = mStrokePaint.getStrokeCap();
+@@ -144,7 +143,7 @@ public class CanvasRenderingContext2D {
+         join = Paint.Join.MITER;
+         break;
+       default:
+-        throw new ReactInvalidPropertyException("lineJoin", lineJoin, "bevel | round | miter");
++        throw new IllegalArgumentException("lineJoin: " + lineJoin + ". Expected bevel | round | miter");
+     }
+ 
+     Paint.Join strokeCap = mStrokePaint.getStrokeJoin();
+@@ -176,7 +175,7 @@ public class CanvasRenderingContext2D {
+         align = Paint.Align.RIGHT;
+         break;
+       default:
+-        throw new ReactInvalidPropertyException("textAlign", textAlign, "left | center | right");
++        throw new IllegalArgumentException("textAlign: " + textAlign + ". Expected left | center | right");
+     }
+ 
+     Paint.Align currentAlign = mTextFillPaint.getTextAlign();
+diff --git a/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2DModule.java b/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2DModule.java
+index 54ec646..758a2ab 100644
+--- a/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2DModule.java
++++ b/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/canvas/CanvasRenderingContext2DModule.java
+@@ -15,7 +15,6 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
+ import com.facebook.react.bridge.ReactMethod;
+ import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.module.annotations.ReactModule;
+-import com.facebook.react.uimanager.ReactInvalidPropertyException;
+ import org.pytorch.rn.core.image.IImage;
+ import org.pytorch.rn.core.javascript.JSContext;
+ 
+@@ -84,7 +83,7 @@ public class CanvasRenderingContext2DModule extends ReactContextBaseJavaModule {
+           CanvasRenderingContext2D ctx = JSContext.unwrapObject(canvasRef);
+           try {
+             ctx.setLineCap(lineCap);
+-          } catch (ReactInvalidPropertyException e) {
++          } catch (IllegalArgumentException e) {
+             promise.reject(e);
+           }
+         });
+@@ -98,7 +97,7 @@ public class CanvasRenderingContext2DModule extends ReactContextBaseJavaModule {
+           CanvasRenderingContext2D ctx = JSContext.unwrapObject(canvasRef);
+           try {
+             ctx.setLineJoin(lineJoin);
+-          } catch (ReactInvalidPropertyException e) {
++          } catch (IllegalArgumentException e) {
+             promise.reject(e);
+           }
+         });
+@@ -120,7 +119,7 @@ public class CanvasRenderingContext2DModule extends ReactContextBaseJavaModule {
+           CanvasRenderingContext2D ctx = JSContext.unwrapObject(canvasRef);
+           try {
+             ctx.setTextAlign(textAlign);
+-          } catch (ReactInvalidPropertyException e) {
++          } catch (IllegalArgumentException e) {
+             promise.reject(e);
+           }
+         });
+diff --git a/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/jsi/PyTorchCoreJSIModulePackage.java b/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/jsi/PyTorchCoreJSIModulePackage.java
+index 9127191..c2bd255 100644
+--- a/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/jsi/PyTorchCoreJSIModulePackage.java
++++ b/node_modules/react-native-pytorch-core/android/src/main/java/org/pytorch/rn/core/jsi/PyTorchCoreJSIModulePackage.java
+@@ -7,16 +7,13 @@
+ 
+ package org.pytorch.rn.core.jsi;
+ 
+-import com.facebook.react.bridge.JSIModulePackage;
+-import com.facebook.react.bridge.JSIModuleSpec;
+ import com.facebook.react.bridge.JavaScriptContextHolder;
+ import com.facebook.react.bridge.ReactApplicationContext;
+ import java.util.Collections;
+ import java.util.List;
+ 
+-public class PyTorchCoreJSIModulePackage implements JSIModulePackage {
+-  @Override
+-  public List<JSIModuleSpec> getJSIModules(
++public class PyTorchCoreJSIModulePackage {
++  public List getJSIModules(
+       ReactApplicationContext reactApplicationContext, JavaScriptContextHolder jsContext) {
+     reactApplicationContext.getNativeModule(PyTorchCoreJSIModule.class).installLib(jsContext);
+     return Collections.emptyList();

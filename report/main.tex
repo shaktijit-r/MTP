@@ -1,0 +1,1173 @@
+% ============================================================================
+% M.Tech Project Report — IIT Jodhpur Format
+% ============================================================================
+\documentclass[12pt,a4paper]{report}
+
+% ── Packages ──
+\usepackage[top=1in, bottom=1in, left=0.75in, right=0.75in]{geometry}
+\usepackage{times}                    % Times New Roman
+\usepackage{setspace}                 % 1.5 line spacing
+\usepackage{graphicx}
+\graphicspath{
+  {../experiments/NIH/}
+  {../experiments/merged/}
+  {../experiments/covid-19/}
+  {../experiments/HAM10000/}
+  {../experiments/ODIR/}
+  {../experiments/OASIS/}
+  {../experiments/diabetic-retinopathy-detection/}
+  {../experiments/rsna-pneumonia-detection-challenge/}
+  {../experiments/MIMIC/}
+}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{tocloft}
+
+% ── Formatting ──
+\onehalfspacing
+\setlength{\parindent}{0.5in}
+\setlength{\parskip}{6pt}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% ── Section heading formatting (14pt bold ALL CAPS for sections) ──
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+    {\normalfont\fontsize{14}{16}\bfseries\centering}
+    {\MakeUppercase{\chaptertitlename}\ \thechapter}{14pt}{\fontsize{14}{16}\bfseries\MakeUppercase}
+\titleformat{\section}
+    {\normalfont\fontsize{14}{16}\bfseries}{\thesection}{1em}{\MakeUppercase}
+\titleformat{\subsection}
+    {\normalfont\fontsize{12}{14}\bfseries\itshape}{\thesubsection}{1em}{}
+
+% ── Page numbering ──
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\begin{document}
+\pagenumbering{gobble}
+
+% ============================================================================
+% COVER PAGE
+% ============================================================================
+\begin{titlepage}
+\begin{center}
+\vspace*{1cm}
+
+{\fontsize{16}{20}\bfseries ENHANCING EXPLAINABILITY OF DEEP LEARNING MODELS FOR MEDICAL IMAGING DIAGNOSTICS}
+
+\vspace{2cm}
+
+\textit{A Project Report submitted by}\\[0.3cm]
+{\large \textbf{Shaktijit Rautaray}}\\[0.2cm]
+{\large M25AI1042}
+
+\vspace{2.5cm}
+
+\textit{in partial fulfillment of the requirements for the award of the degree of}\\[0.5cm]
+{\large \textbf{M.Tech}}\\[0.2cm]
+{\large \textbf{in Artificial Intelligence and Data Science}}
+
+\vfill
+
+\includegraphics[width=2.5cm]{iitj_logo.png}\\[0.3cm]
+
+{\large \textbf{Indian Institute of Technology Jodhpur}}\\[0.2cm]
+{\large School of Artificial Intelligence and Data Science}\\[0.2cm]
+\textit{April 2026}
+
+\end{center}
+\end{titlepage}
+
+% ============================================================================
+% DECLARATION
+% ============================================================================
+\newpage
+\thispagestyle{empty}
+\begin{flushright}
+\textbf{Declaration}
+\end{flushright}
+\vspace{1cm}
+
+I hereby declare that the work presented in this Project Report titled \textit{Enhancing Explainability of Deep Learning Models for Medical Imaging Diagnostics} -- M.Tech, submitted to the Indian Institute of Technology Jodhpur in partial fulfilment of the requirements for the award of the degree of M.Tech, is a bonafide record of the research work carried out under the supervision of \textbf{Prof. Abhinaba Lahiri, Assistant Professor}. The contents of this Project Report in full or in parts, have not been submitted to, and will not be submitted by me to, any other Institute or University in India or abroad for the award of any degree or diploma.
+
+\vspace{3cm}
+\begin{flushright}
+\textbf{Signature}\\
+\textit{Shaktijit Rautaray}\\
+M25AI1042
+\end{flushright}
+
+% ============================================================================
+% CERTIFICATE
+% ============================================================================
+\newpage
+\thispagestyle{empty}
+\begin{flushright}
+\textbf{Certificate}
+\end{flushright}
+\vspace{1cm}
+
+This is to certify that the Project Report titled \textit{Enhancing Explainability of Deep Learning Models for Medical Imaging Diagnostics}, submitted by \textbf{Shaktijit Rautaray (M25AI1042)} to the Indian Institute of Technology Jodhpur for the award of the degree of M.Tech, is a bonafide record of the research work done by him under my supervision. To the best of my knowledge, the contents of this report, in full or in parts, have not been submitted to any other Institute or University for the award of any degree or diploma.
+
+\vspace{3cm}
+\begin{flushright}
+\textbf{Signature}\\
+Prof. Abhinaba Lahiri\\
+Assistant Professor\\
+School of Artificial Intelligence and Data Science\\
+Indian Institute of Technology Jodhpur
+\end{flushright}
+
+% ============================================================================
+% ABSTRACT
+% ============================================================================
+\newpage
+\pagenumbering{roman}
+\begin{flushright}
+\textbf{Abstract}
+\end{flushright}
+\vspace{0.5cm}
+
+Medical imaging diagnostics powered by deep learning often operate as opaque black-box systems, limiting clinical adoption despite high classification accuracy. This work presents a unified, multi-domain diagnostic framework that integrates eleven heterogeneous medical imaging datasets spanning five clinical specialties -- radiology, pulmonology, dermatology, ophthalmology, and neurology -- into a single training pipeline capable of diagnosing 35 distinct pathological conditions. We employ a Swin Transformer V2 backbone with a multi-modal fusion architecture that jointly processes visual features and structured Electronic Health Record (EHR) metadata. To address severe class imbalance inherent in medical datasets, we introduce deterministic class-balanced undersampling with differential learning rate optimization. The framework incorporates five complementary explainability methods -- Semantic Attention Synthesis (SAS), Grad-CAM, Integrated Gradients, Occlusion Sensitivity, and Class Activation Mapping (CAM) -- to generate clinically interpretable attribution maps with automated bounding-box localization and plain-language clinical interpretation briefs. All trained models are exported to ONNX format and integrated into a fully offline Android mobile application with a custom ONNX Runtime native inference bridge, on-device CAM and Occlusion heatmap generation, APK-aware model caching, and a dual-mode clinical report synthesizer (edge LLM with deterministic template fallback), enabling real-time point-of-care diagnostics with full AI transparency without cloud connectivity. Experimental results demonstrate competitive AUC-ROC scores across all disease targets with a natural classification threshold near 0.5, validating the effectiveness of the balanced training strategy.
+
+% ============================================================================
+% TABLE OF CONTENTS
+% ============================================================================
+\newpage
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+
+% ============================================================================
+% MAIN TEXT BEGINS
+% ============================================================================
+\newpage
+\pagenumbering{arabic}
+
+% ============================
+% CHAPTER 1: INTRODUCTION
+% ============================
+\chapter{Introduction and Background}
+
+\section{Motivation}
+
+Medical imaging constitutes one of the most data-intensive and diagnostically critical branches of modern healthcare. Radiological examinations such as chest X-rays, fundus photography for retinal disease, dermoscopic imaging for skin lesion classification, and brain MRI scans collectively account for billions of diagnostic procedures annually worldwide \cite{rajpurkar2017chexnet}. The interpretation of these images traditionally requires years of specialized training and remains subject to significant inter-observer variability, with reported disagreement rates of 20--30\% among radiologists for certain pathologies \cite{bruno2015understanding}.
+
+Deep learning has emerged as a transformative technology in this domain, with convolutional neural networks (CNNs) and, more recently, Vision Transformers achieving radiologist-level performance on specific diagnostic tasks \cite{dosovitskiy2020image, liu2021swin}. However, the clinical deployment of these models remains limited due to two fundamental challenges:
+
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{Opacity of decision-making:} Deep neural networks operate as black-box classifiers, providing a probability score without any explanation of \textit{why} a particular diagnosis was reached. This opacity conflicts with the fundamental medical principle of clinical accountability and hinders regulatory approval under frameworks such as the EU AI Act and FDA guidelines for Software as a Medical Device (SaMD).
+    
+    \item \textbf{Domain fragmentation:} Existing approaches typically train disease-specific models on isolated, single-source datasets, leading to poor generalization across imaging modalities, equipment manufacturers, and patient demographics. A model trained exclusively on NIH ChestX-ray14 data may fail systematically when deployed on MIMIC-CXR images due to distributional shifts in acquisition protocols.
+\end{enumerate}
+
+\section{Scope of the Project}
+
+This project addresses both challenges through a unified diagnostic framework with the following key contributions:
+
+\begin{enumerate}
+    \item \textbf{Multi-domain dataset integration:} We curate and harmonize eleven heterogeneous medical imaging datasets across five clinical specialties into a single, standardized training pipeline with universal metadata parsing.
+    
+    \item \textbf{Cross-dataset merged training:} For diseases that appear across multiple datasets (e.g., Pneumonia in NIH, MIMIC, and RSNA), we merge the datasets into a single, class-balanced training set, improving generalization through distributional diversity.
+    
+    \item \textbf{Multi-modal fusion architecture:} We design a hybrid model that jointly processes imaging data through a Swin Transformer V2-Small backbone and structured EHR metadata (age, sex, clinical scores) through a learned fusion MLP, enabling the model to leverage both visual and demographic features.
+    
+    \item \textbf{Comprehensive explainability:} We implement four complementary explanation methods -- SAS, Grad-CAM, Integrated Gradients, and Occlusion Sensitivity -- with automated spatial localization and clinical report generation, making model decisions transparent and interpretable.
+    
+    \item \textbf{Edge deployment:} All 35 trained models are exported to ONNX format and integrated into a fully offline Android mobile application with a custom ONNX Runtime native inference bridge, enabling real-time point-of-care diagnostics with on-device clinical report generation.
+\end{enumerate}
+
+\section{Organization of the Report}
+
+The remainder of this report is organized as follows: Chapter~2 surveys related work in medical image classification and explainable AI. Chapter~3 formally defines the problem statement and research objectives. Chapter~4 details the proposed methodology, including dataset curation, model architecture, training pipeline, and explainability framework. Chapter~5 presents experimental results and analysis. Chapter~6 concludes the report with a summary and directions for future work.
+
+
+% ============================
+% CHAPTER 2: LITERATURE SURVEY
+% ============================
+\chapter{Literature Survey}
+
+\section{Deep Learning in Medical Imaging}
+
+The application of deep learning to medical image analysis has progressed through several architectural paradigms. Rajpurkar et al. \cite{rajpurkar2017chexnet} demonstrated that a 121-layer DenseNet (CheXNet) could achieve radiologist-level performance on pneumonia detection from chest X-rays using the NIH ChestX-ray14 dataset. Irvin et al. \cite{irvin2019chexpert} subsequently introduced CheXpert, a large-scale chest radiograph dataset with uncertainty labels, establishing competitive benchmarks for fourteen thoracic observations.
+
+The evolution from CNNs to Vision Transformers marked a significant architectural shift. Dosovitskiy et al. \cite{dosovitskiy2020image} proposed the Vision Transformer (ViT), which partitions images into fixed-size patches and processes them through standard Transformer encoder blocks. Liu et al. \cite{liu2021swin} introduced the Swin Transformer, which addresses the quadratic complexity of full self-attention through a hierarchical, shifted-window mechanism, enabling efficient processing of high-resolution medical images. The Swin Transformer V2 \cite{liu2022swinv2} further incorporates cosine attention and log-spaced continuous position bias, improving transferability across resolutions and achieving state-of-the-art results on multiple vision benchmarks.
+
+\section{Multi-Modal Learning in Healthcare}
+
+The integration of imaging data with structured Electronic Health Records (EHR) has shown promise in improving diagnostic accuracy. Huang et al. \cite{huang2020multimodal} demonstrated that combining chest X-ray features with clinical metadata (age, sex, lab results) through late fusion architectures improved AUC-ROC by 3--5\% over image-only models for pulmonary disease classification. Acosta et al. \cite{acosta2022multimodal} proposed a cross-attention fusion mechanism for jointly processing radiology images and clinical notes, achieving significant improvements on the MIMIC-CXR dataset.
+
+\section{Explainable AI for Medical Diagnosis}
+
+Explainability in medical AI is not merely desirable but increasingly mandated by regulatory bodies. The primary methods for generating visual explanations fall into three categories:
+
+\subsection{Gradient-based Methods}
+Selvaraju et al. \cite{selvaraju2017gradcam} proposed Gradient-weighted Class Activation Mapping (Grad-CAM), which uses the gradients flowing into the final convolutional layer to produce a coarse localization map highlighting discriminative regions. Sundararajan et al. \cite{sundararajan2017axiomatic} introduced Integrated Gradients (IG), which satisfies the axioms of sensitivity and implementation invariance by accumulating gradients along a straight-line path from a baseline input to the actual input.
+
+\subsection{Perturbation-based Methods}
+Zeiler and Fergus \cite{zeiler2014visualizing} proposed Occlusion Sensitivity, which systematically occludes patches of the input image and observes the change in prediction probability. While computationally expensive, this method provides model-agnostic explanations and serves as a robust validation tool for gradient-based attributions.
+
+\subsection{Attention-based Methods}
+For Transformer architectures, attention rollout \cite{abnar2020quantifying} and attention flow methods directly leverage the self-attention matrices to visualize which image patches the model attends to. Our proposed Semantic Attention Synthesis (SAS) method extends this paradigm by performing multi-stage feature magnitude aggregation across early, middle, and late Swin Transformer stages, producing hierarchical attention maps that capture both low-level textural and high-level semantic attention patterns.
+
+\section{Class Imbalance in Medical Datasets}
+
+Medical imaging datasets exhibit extreme class imbalance, with positive case prevalence often below 5\% for rare pathologies \cite{johnson2019mimic}. Traditional approaches include oversampling (SMOTE \cite{chawla2002smote}), weighted loss functions (Focal Loss \cite{lin2017focal}), and weighted random sampling. Lin et al. \cite{lin2017focal} proposed Focal Loss, which down-weights the contribution of well-classified examples and focuses training on hard negatives through a modulating factor $(1 - p_t)^\gamma$. In this work, we demonstrate that deterministic class-balanced undersampling, combined with Focal Loss without explicit class weights, achieves superior threshold stability compared to weighted approaches.
+
+\section{Edge Deployment of Medical AI}
+
+Deploying deep learning models on resource-constrained edge devices remains an active research area. TorchScript-based model tracing \cite{pytorch2019} enables ahead-of-time compilation for efficient inference. The PyTorch Mobile Lite Interpreter further reduces runtime overhead through operator fusion and quantization-aware optimization, enabling models with 50M+ parameters to run on mobile devices with sub-second inference latency.
+
+
+% ============================
+% CHAPTER 3: PROBLEM DEFINITION
+% ============================
+\chapter{Problem Definition and Objective}
+
+\section{Problem Statement}
+
+Given a medical image $\mathbf{x} \in \mathbb{R}^{3 \times H \times W}$ and an optional structured metadata vector $\mathbf{m} \in \mathbb{R}^{d}$ (where $d$ varies by dataset domain), the objective is to:
+
+\begin{enumerate}
+    \item Learn a multi-modal classifier $f(\mathbf{x}, \mathbf{m}; \theta) \rightarrow [0, 1]$ that outputs the probability of a target pathological condition being present, where $\theta$ represents the learnable parameters.
+    
+    \item Generate a spatial attribution map $\mathbf{A} \in \mathbb{R}^{H \times W}$ that localizes the image regions most influential to the classification decision, enabling clinical interpretability.
+    
+    \item Ensure the classifier generalizes across heterogeneous data sources for the same disease by training on merged, cross-dataset corpora where available.
+    
+    \item Deploy the trained models on edge devices for point-of-care inference without cloud connectivity.
+\end{enumerate}
+
+\section{Research Objectives}
+
+The specific research objectives addressed in this project are:
+
+\begin{enumerate}
+    \item \textbf{Dataset Harmonization:} Design a universal metadata parser that normalizes label formats, demographic encodings, and image naming conventions across eleven distinct datasets spanning five medical domains.
+    
+    \item \textbf{Class-Balanced Training:} Develop a deterministic undersampling strategy that enforces a 1:1 positive-to-negative ratio across all training, validation, and test splits, eliminating the need for class-weighted loss functions and producing a natural classification threshold near 0.5.
+    
+    \item \textbf{Architecture Design:} Implement a multi-modal fusion architecture that combines Swin Transformer V2-Small visual features with variable-dimension EHR metadata through a learned MLP fusion layer, supporting metadata dimensions from 0-D (pure vision) to 21-D (dermatology with tumoral physics) to 11-D (neurology with cognitive scores).
+    
+    \item \textbf{Explainability Framework:} Implement and evaluate four complementary attribution methods (SAS, Grad-CAM, Integrated Gradients, Occlusion) with automated clinical bounding-box localization and natural language report synthesis.
+    
+    \item \textbf{Mobile Deployment:} Export all trained models to ONNX format for cross-platform on-device inference via ONNX Runtime Mobile.
+\end{enumerate}
+
+
+% ============================
+% CHAPTER 4: METHODOLOGY
+% ============================
+\chapter{Methodology}
+
+\section{Dataset Curation and Integration}
+
+\subsection{Dataset Overview}
+
+We curate eleven publicly available medical imaging datasets across five clinical domains, as summarized in Table~\ref{tab:datasets}.
+
+\begin{table}[ht]
+\centering
+\caption{Summary of integrated medical imaging datasets.}
+\label{tab:datasets}
+\begin{tabular}{@{}llllr@{}}
+\toprule
+\textbf{Domain} & \textbf{Dataset} & \textbf{Modality} & \textbf{Diseases} & \textbf{Images} \\
+\midrule
+\multirow{4}{*}{Radiology} 
+    & NIH ChestX-ray14 & CXR & 14 & 112,120 \\
+    & MIMIC-CXR & CXR & 14 & 259,038 \\
+    & RSNA Pneumonia & CXR & 1 & 26,684 \\
+    & COVID-19 Radiography & CXR & 4 & 21,165 \\
+\midrule
+\multirow{3}{*}{Dermatology}
+    & HAM10000 & Dermoscopy & 7 & 10,015 \\
+    & ISIC 2024 & Dermoscopy & 1 & 401,059 \\
+    & ISIC 2018 & Dermoscopy & 1 & 2,594 \\
+\midrule
+\multirow{2}{*}{Ophthalmology}
+    & ODIR-5K & Fundus & 7 & 7,000 \\
+    & DR Detection & Fundus & 1 & 35,126 \\
+\midrule
+Neurology & OASIS & Brain MRI & 1 & 416 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Universal Metadata Parser}
+
+A central challenge in multi-dataset integration is the heterogeneity of label formats and demographic encodings. We design a universal metadata parser (\texttt{metadata\_parser.py}) that maps each dataset's native schema to a standardized output format:
+
+\begin{equation}
+    \text{output}[\text{filename}] = \left( y_{\text{smooth}}, \; \mathbf{m} \right)
+    \label{eq:metadata_format}
+\end{equation}
+
+\noindent where $y_{\text{smooth}} \in \{0.05, 0.95\}$ is a label-smoothed binary target, and $\mathbf{m}$ is a domain-specific metadata vector with dimensions varying by dataset:
+
+\begin{itemize}
+    \item \textbf{4-D} (Radiology): $[\text{Age}_{\text{z-score}}, \; \text{Is\_Male}, \; \text{Is\_Female}, \; \text{Has\_Meta}]$
+    \item \textbf{0-D} (COVID-19, DR Detection): Pure vision, no metadata
+    \item \textbf{11-D} (OASIS Neurology): Base 4-D $+$ [Handedness, Education, SES, MMSE, eTIV, nWBV, ASF]
+    \item \textbf{21-D} (Dermatology): Base 4-D $+$ Localization one-hot (9-D) $+$ Tumor size $+$ TBP color features (6-D) $+$ integrity flag
+\end{itemize}
+
+Age values are Z-score normalized with $\mu = 55.0, \sigma = 20.0$ and clamped to $[-3, 3]$ standard deviations. Sex is encoded as a bipolar pair $(\text{Is\_Male}, \text{Is\_Female}) \in \{-1, 1\}^2$ rather than one-hot to encode uncertainty when metadata is missing.
+
+\subsection{Class-Balanced Undersampling}
+
+Medical datasets exhibit extreme class imbalance. For example, the NIH dataset has a Cardiomegaly prevalence of only 2.6\% (1,977 positives out of 78,484 training samples). Training with such imbalance causes the model to predict the majority class overwhelmingly, producing artificially inflated accuracy metrics.
+
+We implement deterministic undersampling at the dataset level: after the standard 70/15/15 train-val-test split, the majority class is randomly subsampled (with a fixed seed for reproducibility) to match the minority class count:
+
+\begin{equation}
+    N_{\text{balanced}} = 2 \times \min(N_{\text{pos}}, N_{\text{neg}})
+    \label{eq:balanced}
+\end{equation}
+
+This produces a natural 50/50 class distribution, eliminating the need for \texttt{pos\_weight} in the loss function and ensuring that the optimal classification threshold converges naturally to 0.5.
+
+\section{Model Architecture}
+
+\subsection{Vision Backbone: Swin Transformer V2-Small}
+
+We employ the Swin Transformer V2-Small (SwinV2-S) \cite{liu2022swinv2} as the vision backbone, initialized with ImageNet-1K pretrained weights. SwinV2-S processes $256 \times 256$ input images through four hierarchical stages with shifted window self-attention, producing a 768-dimensional feature vector after global average pooling. Key architectural parameters include:
+
+\begin{itemize}
+    \item \textbf{Embed dimension:} 96, with channel multipliers [1, 2, 4, 8] across stages
+    \item \textbf{Window size:} $8 \times 8$ patches with shifted window attention
+    \item \textbf{Attention heads:} [3, 6, 12, 24] across four stages
+    \item \textbf{Total parameters:} $\sim$50M (vision backbone)
+\end{itemize}
+
+\subsection{Multi-Modal Fusion Architecture}
+
+The vision feature vector $\mathbf{v} \in \mathbb{R}^{768}$ and the metadata vector $\mathbf{m} \in \mathbb{R}^{d}$ are concatenated and processed through a fusion MLP:
+
+\begin{equation}
+    \hat{y} = \sigma\left( \text{MLP}\left( [\mathbf{v} \; || \; \mathbf{m}] \right) \right)
+    \label{eq:fusion}
+\end{equation}
+
+\noindent where $||$ denotes concatenation, $\sigma$ is the sigmoid function, and the MLP consists of:
+
+\begin{equation}
+    \text{MLP}(\mathbf{z}) = W_2 \cdot \text{Dropout}_{0.3}\left( \text{ReLU}\left( W_1 \cdot \mathbf{z} + b_1 \right) \right) + b_2
+    \label{eq:mlp}
+\end{equation}
+
+\noindent with $W_1 \in \mathbb{R}^{256 \times (768 + d)}$ and $W_2 \in \mathbb{R}^{1 \times 256}$. For datasets with no metadata ($d = 0$), the fusion MLP operates directly on the 768-D vision features.
+
+For cross-dataset merged training where sub-datasets have different metadata dimensions, we employ a \texttt{MetadataPadAdapter} wrapper that zero-pads shorter metadata vectors to match the maximum dimension across all constituent datasets.
+
+\section{Training Pipeline}
+
+\subsection{Loss Function: Focal Loss}
+
+We use Focal Loss \cite{lin2017focal} without class weights (since data is already balanced):
+
+\begin{equation}
+    \mathcal{L}_{\text{focal}} = -\alpha (1 - p_t)^\gamma \log(p_t)
+    \label{eq:focal}
+\end{equation}
+
+\noindent where $\alpha = 1.0$, $\gamma = 2.0$, and $p_t = \sigma(\hat{y})$ if $y = 1$, else $1 - \sigma(\hat{y})$. The modulating factor $(1 - p_t)^\gamma$ focuses the loss on hard-to-classify samples, which is complementary to the balanced sampling strategy.
+
+\subsection{Label Smoothing}
+
+Binary labels are smoothed to $y \in \{0.05, 0.95\}$ to prevent overconfident predictions and improve calibration:
+
+\begin{equation}
+    y_{\text{smooth}} = y \cdot (1 - \epsilon) + 0.5 \cdot \epsilon, \quad \epsilon = 0.1
+    \label{eq:label_smooth}
+\end{equation}
+
+\subsection{Data Augmentation}
+
+Training images undergo aggressive augmentation to improve generalization:
+
+\begin{itemize}
+    \item Random horizontal flip ($p = 0.5$) and vertical flip ($p = 0.1$)
+    \item Random affine transformation (rotation $\pm 15^\circ$, translation $\pm 10\%$, scale $0.9$--$1.1$, shear $\pm 10^\circ$)
+    \item Color jitter (brightness $\pm 0.15$, contrast $\pm 0.15$, saturation $\pm 0.1$)
+    \item RandAugment (2 operations, magnitude 9) \cite{cubuk2020randaugment}
+    \item Random erasing ($p = 0.1$, scale 2--10\%)
+    \item CutMix augmentation ($p = 0.5$, $\beta = 1.0$) \cite{yun2019cutmix}
+\end{itemize}
+
+Validation and test images use only center-crop resize to $256 \times 256$ with ImageNet normalization.
+
+\subsection{Optimization Strategy}
+
+\subsubsection{Differential Learning Rates}
+
+A critical finding of this work is that pretrained Transformer backbones are extremely sensitive to the learning rate during fine-tuning. Applying a uniform learning rate of $3 \times 10^{-4}$ to both the backbone and classification head causes catastrophic forgetting -- the backbone features collapse, and the model degenerates to predicting 0.5 for all inputs, producing a constant Focal Loss of:
+
+\begin{equation}
+    \mathcal{L}_{\text{collapse}} = \alpha (1 - 0.5)^2 \cdot \ln(2) = 0.25 \times 0.6931 = 0.1733
+    \label{eq:collapse}
+\end{equation}
+
+We resolve this through differential learning rates:
+
+\begin{itemize}
+    \item \textbf{Backbone (SwinV2-S):} max LR = $1 \times 10^{-5}$ (gentle fine-tuning)
+    \item \textbf{Classification head (Fusion MLP):} max LR = $3 \times 10^{-4}$ (fast adaptation)
+\end{itemize}
+
+\subsubsection{Learning Rate Schedule}
+
+We use the OneCycleLR scheduler \cite{smith2019super} with per-parameter-group maximum learning rates, 10\% warmup fraction, and cosine annealing:
+
+\begin{equation}
+    \text{lr}(t) = \text{lr}_{\max} \cdot \frac{1}{2}\left(1 + \cos\left(\pi \cdot \frac{t - t_{\text{warmup}}}{T - t_{\text{warmup}}}\right)\right)
+    \label{eq:onecycle}
+\end{equation}
+
+\subsubsection{Backbone Freeze-Unfreeze}
+
+The backbone is frozen for the first 2 epochs to allow the randomly initialized fusion MLP to learn stable feature projections. After 2 epochs, the backbone is unfrozen with the lower learning rate.
+
+\subsection{Regularization and Generalization}
+
+\begin{itemize}
+    \item \textbf{Exponential Moving Average (EMA):} We maintain an exponential moving average of model weights ($\beta = 0.999$), which smooths out training noise and consistently produces better validation performance than the raw weights.
+    
+    \item \textbf{Gradient clipping:} Maximum gradient norm is clipped to 1.0 to prevent training instability.
+    
+    \item \textbf{Early stopping:} Training terminates if validation loss does not improve for 5 consecutive epochs (patience = 5), with the best EMA weights restored for evaluation.
+    
+    \item \textbf{Mixed precision (BF16):} All training is performed in BFloat16 precision, which provides the same dynamic range as FP32 while halving memory usage. This eliminates the need for gradient scaling (required by FP16) and is natively supported by the RTX 4080's Ada Lovelace architecture.
+\end{itemize}
+
+\subsection{Test-Time Augmentation (TTA)}
+
+During evaluation, each test image is processed twice -- once in its original orientation and once with a horizontal flip. The final prediction is the average of both logit outputs:
+
+\begin{equation}
+    \hat{y}_{\text{TTA}} = \frac{1}{2}\left( f(\mathbf{x}) + f(\text{flip}(\mathbf{x})) \right)
+    \label{eq:tta}
+\end{equation}
+
+\section{Explainability Framework}
+
+\subsection{Semantic Attention Synthesis (SAS)}
+
+We propose Semantic Attention Synthesis (SAS), a gradient-free attribution method designed for hierarchical Vision Transformers. SAS extracts feature magnitude maps from three stages of the Swin Transformer backbone:
+
+\begin{equation}
+    \mathbf{A}_{\text{SAS}} = \sum_{s \in \{\text{early}, \text{mid}, \text{late}\}} w_s \cdot \text{Upsample}\left( \frac{1}{C_s} \sum_{c=1}^{C_s} F_{s,c}^2 \right)
+    \label{eq:sas}
+\end{equation}
+
+\noindent where $F_{s,c}$ is the $c$-th channel of the feature map at stage $s$, $C_s$ is the number of channels, and the stage weights are $w_{\text{early}} = 0.15, w_{\text{mid}} = 0.25, w_{\text{late}} = 0.60$, reflecting that later stages encode higher-level semantic information.
+
+\subsection{Additional Attribution Methods}
+
+\begin{itemize}
+    \item \textbf{Grad-CAM} \cite{selvaraju2017gradcam}: Uses gradient information from the target class flowing into the final convolutional layer to produce a coarse spatial localization map.
+    
+    \item \textbf{Integrated Gradients} \cite{sundararajan2017axiomatic}: Accumulates gradients along a straight-line path from a zero baseline to the input image over 50 interpolation steps, producing pixel-level attributions.
+    
+    \item \textbf{Occlusion Sensitivity} \cite{zeiler2014visualizing}: Systematically occludes $15 \times 15$ patches with stride 8 across the input, measuring prediction change. Provides model-agnostic validation of gradient-based methods.
+    
+    \item \textbf{Class Activation Mapping (CAM):} Directly visualizes the spatial feature activations from the SwinV2-S backbone's final stage ($8 \times 8 \times 768$ spatial features), weighted by the classification head weights. Unlike gradient-based methods, CAM captures the raw pre-pooling spatial attention pattern learned during training. The per-disease CAM weights are pre-extracted and serialized as binary files ($768 \times 4$ bytes each), enabling zero-cost on-device heatmap generation without backpropagation.
+\end{itemize}
+
+\subsection{Clinical Localization and Reporting}
+
+Attribution maps are post-processed through a clinical localization pipeline:
+
+\begin{enumerate}
+    \item \textbf{Gaussian smoothing:} Raw attribution maps are smoothed with a kernel of size $h/16$ (minimum 15) to suppress pixel-level noise.
+    \item \textbf{Adaptive Otsu thresholding:} Binary segmentation of high-attribution regions with quantile fallback for low-contrast maps.
+    \item \textbf{Morphological cleanup:} Closing (fill gaps) followed by opening (remove noise) with elliptical kernels.
+    \item \textbf{Contour detection:} Up to three primary regions are identified, fitted with rotated bounding rectangles, and annotated with their percentage area and anatomical quadrant (e.g., ``Superior Medial Region'').
+    \item \textbf{Report synthesis:} A dual-mode synthesizer generates clinical narrative text. When a local edge LLM (Qwen2.5-3B-Instruct, running in FP16 on CUDA) is available, it generates contextual clinical narratives via five separate inference calls (findings, impression, SAS analysis, IG analysis, occlusion analysis), each constrained by strict medical prompts grounded in the model's actual outputs. When the LLM is unavailable, a deterministic template-based fallback generates equivalent clinical text using f-string interpolation of model metrics (probability, spatial regions, uncertainty, area coverage), ensuring reports are never empty or degraded.
+    \item \textbf{Clinical interpretation briefs:} Each explainability heatmap in the generated PDF report is accompanied by a plain-language interpretation section explaining what the visualization shows, how to read the colour scale, and what it reveals about the model's reasoning --- enabling non-technical medical professionals to assess the AI's transparency without requiring machine learning expertise.
+\end{enumerate}
+
+\section{Edge Deployment}
+
+\subsection{Model Export Pipeline}
+
+Trained models are exported to ONNX (Open Neural Network Exchange) format through the following pipeline:
+
+\begin{enumerate}
+    \item EMA model weights are loaded and converted to Float16 (half precision) via \texttt{model.half()}, reducing weight storage from 32-bit to 16-bit floating point.
+    \item The FP16 model is wrapped in a \texttt{MobileWrapper} module that (a) injects zero-valued metadata tensors (since EHR data is unavailable on mobile), (b) casts FP32 input images to FP16 for compatibility with the half-precision weights, and (c) casts the output logits back to FP32 for ONNX Runtime consumption.
+    \item The wrapped model is exported via \texttt{torch.onnx.export()} using the legacy TorchScript-based ONNX exporter with \texttt{dynamo=False} at opset version 14, with dynamic batch axes and constant folding. The legacy exporter is specifically chosen for its robust handling of FP16 SwinV2 attention operations, which the newer dynamo-based exporter fails to decompose correctly.
+    \item Input/output tensor names are explicitly specified (\texttt{image} $\rightarrow$ \texttt{logits}) for deterministic runtime binding on the mobile device.
+    \item Any external weight data files generated during export are consolidated back into a single self-contained \texttt{.onnx} file using \texttt{onnx.save\_model()} with external data disabled.
+    \item Output: self-contained \texttt{.onnx} files ($\sim$97 MB per model in FP16) deployable on Android via ONNX Runtime.
+\end{enumerate}
+
+All 35 disease models are successfully exported to ONNX format, producing a total model library of approximately 3.33 GB in FP16 precision --- a 2$\times$ reduction from the original FP32 PyTorch weights ($\sim$197 MB each, $\sim$6.9 GB total).
+
+\subsection{Mobile Application Architecture}
+
+A fully offline React Native mobile application is developed with native Android integration for on-device inference and on-device explainability. The architecture consists of three layers:
+
+\begin{enumerate}
+    \item \textbf{Presentation layer (React Native / JavaScript):} Full diagnostic UI with disease search, camera/gallery image selection, real-time pipeline visualization, clinical report generation, and PDF export. Supports four languages (English, Hindi, Tamil, Bengali). The PDF report embeds CAM and Occlusion heatmap overlays alongside structured clinical interpretation briefs that explain each visualization in plain language for medical professionals.
+    
+    \item \textbf{Native bridge layer (Kotlin):} A custom \texttt{PytorchBridgeModule} native module receives image URIs and disease identifiers from JavaScript, manages ONNX session loading/caching, performs image preprocessing (resize to $256 \times 256$, ImageNet normalization with channel-first NCHW layout), executes TTA inference (original $+$ horizontal flip), and returns probability, prediction, confidence level, and inference timing via React Native's asynchronous bridge. The bridge also exposes two on-device explainability methods:
+    \begin{itemize}
+        \item \texttt{generateCAMHeatmap()}: Extracts the $8 \times 8 \times 768$ spatial feature map from the ONNX model's secondary output, performs a weighted sum using pre-extracted per-disease classification weights (loaded from serialized binary files), upsamples to input resolution, applies JET colourmap, and composites with the original image at 40\% opacity. This produces a Class Activation Map heatmap at near-zero additional cost.
+        \item \texttt{generateOcclusionMap()}: Performs a 16-pass perturbation analysis (4$\times$4 grid) by masking non-overlapping patches with zero values, re-running inference for each, measuring the prediction confidence drop, and generating a sensitivity heatmap. This provides model-agnostic causal attribution at a cost of $\sim$30--45 seconds per image.
+    \end{itemize}
+    
+    \item \textbf{Inference engine (ONNX Runtime 1.24.3):} The \texttt{onnxruntime-android} v1.24.3 runtime creates optimized sessions (\texttt{OrtSession}) with graph optimization (\texttt{ALL\_OPT}: constant folding, node elimination, operator fusion) and 4 intra-op threads for parallel CPU computation. Version 1.24.3 is specifically required as it provides 16 KB page-aligned native libraries, mandatory for Android 15's kernel enforcement of 16 KB ELF segment alignment. Models are first copied from APK assets to internal storage for random-access loading, then executed via \texttt{OnnxTensor} input bindings. An LRU-1 caching strategy keeps the most recently used session in memory, automatically closing the previous session to prevent out-of-memory conditions.
+\end{enumerate}
+
+\noindent Key mobile deployment optimizations include:
+
+\begin{itemize}
+    \item \textbf{APK-aware model caching:} ONNX models are copied from the APK's bundled assets directory to internal storage on first use, as ONNX Runtime requires direct file path access for session creation. The caching logic compares the APK's \texttt{lastModified} timestamp against a persisted \texttt{apk\_version} marker; when a new APK is installed with updated models, the cache is automatically invalidated and all models are re-copied, ensuring the device always runs the latest model weights.
+    \item \textbf{Session optimization:} ONNX Runtime sessions are created with \texttt{ALL\_OPT} graph-level optimization and 4 intra-op threads for parallel computation, reducing inference latency on multi-core mobile CPUs.
+    \item \textbf{Template-based report synthesis:} Clinical reports are generated using a deterministic template engine grounded in model predictions, anatomical region localization, and confidence metrics --- no external language model or API is required. Each heatmap section includes a clinical interpretation brief explaining what the visualization shows, how to read the colour scale, the method's limitations, and its clinical value.
+    \item \textbf{Graceful degradation:} If the native inference module is unavailable (e.g., during development in Expo Go), the application falls back to a demonstration mode with simulated predictions, clearly labeled in the UI.
+\end{itemize}
+
+\subsection{Inference Fidelity Validation}
+
+To verify that the FP16 ONNX export preserves model accuracy, we perform a head-to-head comparison between the desktop FP32 PyTorch model and the mobile FP16 ONNX model on the same test image from the NIH Atelectasis test set (\texttt{00015266\_010.png}):
+
+\begin{table}[h]
+\centering
+\caption{FP32 vs.\ FP16 inference fidelity comparison (Atelectasis, NIH test image).}
+\label{tab:fp16_validation}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Platform} & \textbf{Precision} & \textbf{Confidence (\%)} \\
+\midrule
+Desktop (PyTorch) & FP32 & 52.4 \\
+Mobile (ONNX Runtime) & FP16 & 52.8 \\
+\midrule
+\textbf{Absolute Deviation} & --- & \textbf{0.4\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent The observed deviation of 0.4\% is well within the expected $\pm$2--5\% range for FP16 quantization, confirming that the ONNX export pipeline faithfully preserves the trained model's diagnostic capability. The mobile application was successfully deployed and tested on a Samsung Galaxy Tab S7+ running Android 15, verifying end-to-end on-device inference with the ONNX Runtime 1.24.3 engine.
+
+\section{Design Rationale and Constraints}
+
+Every architectural and training decision in this framework is driven by two complementary constraints: (a) the training hardware budget (single NVIDIA RTX 4080 Laptop GPU with 12 GB VRAM), and (b) the deployment target (mobile devices in resource-constrained clinical settings). This section provides explicit justifications for each design choice.
+
+\subsection{Choice of Vision Backbone: SwinV2-S}
+
+We evaluate three candidate backbone architectures:
+
+\begin{itemize}
+    \item \textbf{ResNet-50/101} (CNN): Lower parameter count ($\sim$25M) and fast training, but limited receptive field requires deep stacking. Lacks the global context understanding critical for whole-image pathologies like Cardiomegaly or Pleural Effusion, where the diagnostic signal is distributed across the entire scan.
+    
+    \item \textbf{Vision Transformer (ViT-B/16)}: Excellent global attention, but its $\mathcal{O}(n^2)$ full self-attention is prohibitively expensive for $256 \times 256$ inputs (16$\times$16 patches $=$ 256 tokens, each attending to all others). On 12 GB VRAM, batch size would be limited to $\sim$8, severely degrading batch normalization statistics and training throughput.
+    
+    \item \textbf{Swin Transformer V2-Small}: Hierarchical shifted-window attention reduces complexity to $\mathcal{O}(n)$ while maintaining strong global context through cross-window interactions. The 768-D output matches ViT-B capacity while fitting batch size 32 comfortably within 12 GB VRAM during full fine-tuning with BF16 precision.
+\end{itemize}
+
+We specifically select the \textbf{Small} variant (50M parameters) over Tiny (28M, insufficient capacity for 35 diverse diseases) and Base (88M, exceeds VRAM budget for batch 32 with backward pass). SwinV2's cosine attention and log-spaced continuous position bias also provide superior resolution transfer from ImageNet ($224 \times 224$) to our medical images ($256 \times 256$).
+
+\subsection{Input Resolution: $256 \times 256$}
+
+Medical images (particularly chest X-rays) are originally high-resolution ($1024 \times 1024$ or larger). We select $256 \times 256$ as the optimal resolution tradeoff:
+
+\begin{itemize}
+    \item \textbf{$224 \times 224$ (ImageNet default):} Minimal computational cost but loses fine anatomical detail critical for small-lesion detection (Nodule, Lung Lesion).
+    \item \textbf{$256 \times 256$ (selected):} 31\% more pixels than $224^2$, preserving clinically significant detail while maintaining batch size 32 within 12 GB VRAM. The SwinV2 window size of $8 \times 8$ divides evenly into $256 \times 256$, avoiding padding artifacts.
+    \item \textbf{$384 \times 384$ or higher:} Would require reducing batch size to $\leq$16, degrading training stability and throughput. Not feasible on our hardware.
+\end{itemize}
+
+\subsection{Batch Size: 32}
+
+With SwinV2-S at $256 \times 256$ in BF16 precision, the combined memory footprint of the forward pass, backward pass, optimizer states (AdamW stores two moment buffers per parameter), and gradient accumulation is approximately 10.5 GB, leaving a 1.5 GB headroom for PyTorch CUDA memory management overhead. Batch size 64 would require $\sim$18 GB and exceed the 12 GB VRAM budget. Batch size 16 would fit comfortably but halve the effective gradient averaging, increasing training noise. Thus, 32 represents the maximum stable batch size for our hardware.
+
+\subsection{BFloat16 Precision}
+
+We use BFloat16 (BF16) instead of the more common Float16 (FP16) for two reasons:
+
+\begin{enumerate}
+    \item \textbf{Dynamic range equivalence:} BF16 maintains the same 8-bit exponent as FP32 (range $\pm 3.4 \times 10^{38}$), eliminating the gradient underflow/overflow issues that plague FP16 training and require explicit \texttt{GradScaler} management. This simplifies the training pipeline and removes a failure mode.
+    
+    \item \textbf{Native hardware support:} The RTX 4080's Ada Lovelace architecture provides dedicated BF16 tensor cores that achieve the same throughput as FP16 tensor cores, making BF16 a strictly superior choice on this hardware generation.
+\end{enumerate}
+
+\subsection{Balanced Undersampling vs. Alternative Strategies}
+
+We considered three approaches to handle class imbalance:
+
+\begin{itemize}
+    \item \textbf{Weighted loss (\texttt{pos\_weight}):} Multiplies the positive class loss by $w = N_{\text{neg}} / N_{\text{pos}}$. While preserving all training samples, this creates an artificial asymmetry in the loss landscape, causing the optimal classification threshold to deviate from 0.5 (observed: 0.12--0.47 depending on disease prevalence). This complicates deployment, as each disease requires a calibrated threshold.
+    
+    \item \textbf{SMOTE / Oversampling:} Generates synthetic positive examples through interpolation. Not applicable to medical images, as interpolating between two chest X-rays with Pneumonia does not produce a clinically valid Pneumonia image --- it produces a blurred artifact that teaches the model incorrect features.
+    
+    \item \textbf{Deterministic undersampling (selected):} Discards excess majority-class samples to achieve a 1:1 ratio. While losing some negative examples, this produces a \textit{natural} threshold at 0.5 (observed: 0.485--0.490), eliminates the need for per-disease threshold calibration, and simplifies the deployment pipeline. The loss of negative examples is acceptable because the remaining negatives still provide sufficient diversity, and the undersampling is deterministic (seeded) for reproducibility.
+\end{itemize}
+
+\subsection{Focal Loss with Balanced Data}
+
+A natural question arises: if the data is already balanced, why use Focal Loss instead of standard Binary Cross-Entropy (BCE)? The answer lies in \textit{sample-level} difficulty:
+
+\begin{itemize}
+    \item Even in a 50/50 dataset, most samples are ``easy'' (clear positives or clear negatives). Standard BCE gives equal weight to all samples, wasting gradient signal on already-correct predictions.
+    \item Focal Loss with $\gamma = 2.0$ automatically focuses training on the \textit{hard} boundary cases (subtle pathologies, ambiguous radiographs) by down-weighting well-classified examples via the $(1 - p_t)^\gamma$ modulating factor.
+    \item We set $\alpha = 1.0$ (no class weighting) since the data is already balanced. The Focal mechanism addresses \textit{difficulty imbalance}, not class imbalance.
+\end{itemize}
+
+\subsection{Differential Learning Rates: Empirical Justification}
+
+The necessity of differential learning rates was discovered empirically. With a uniform learning rate of $3 \times 10^{-4}$ applied to both backbone and head:
+
+\begin{enumerate}
+    \item Epochs 1--2 (frozen backbone): Val loss improved normally ($0.147 \rightarrow 0.145$).
+    \item Epoch 3 (backbone unfreezes at peak LR): Val loss \textit{jumped} to 0.1733 and remained constant.
+    \item The value 0.1733 corresponds exactly to $\text{FocalLoss}(\sigma(0), 0.5) = (1 - 0.5)^2 \cdot \ln(2) = 0.1733$, confirming the model was predicting 0.5 for all inputs --- a complete collapse of learned backbone features.
+\end{enumerate}
+
+The backbone LR of $1 \times 10^{-5}$ (30$\times$ lower than the head) was selected to preserve the pretrained ImageNet features while allowing gradual medical-domain adaptation. This ratio is consistent with findings in transfer learning literature for Vision Transformers, where backbone learning rates 10--100$\times$ lower than head learning rates are standard practice.
+
+\subsection{OneCycleLR Convergence Behavior}
+
+A consistent pattern is observed across all trained diseases: the best validation loss occurs at epoch 19, with no further improvement through epoch 24 (triggering early stopping at epoch 24 = epoch 19 + patience 5). This is an intrinsic property of the OneCycleLR schedule:
+
+\begin{itemize}
+    \item At epoch 19 (76\% of 25 total epochs), the cosine annealing has reduced the head learning rate to $\sim$3.5$\times 10^{-5}$ (10$\times$ below peak) and the backbone learning rate to $\sim$1.2$\times 10^{-6}$, which is effectively zero for a 50M-parameter model.
+    \item The remaining epochs (20--25) serve only as confirmation that the model has converged, as the optimizer steps are too small to produce meaningful parameter updates.
+    \item This consistent convergence point across diseases validates the stability of the training configuration --- the model reliably extracts all learnable information within the first 19 epochs.
+\end{itemize}
+
+\subsection{Edge Deployment: ONNX Runtime vs. Alternatives}
+
+We select ONNX Runtime Mobile over alternative inference formats:
+
+\begin{itemize}
+    \item \textbf{TorchScript Lite (\texttt{.ptl}):} Direct trace-based export from PyTorch guarantees numerical equivalence, but the Lite Interpreter's selective operator loading caused compatibility issues with Swin Transformer V2's shifted window attention and relative position bias operations, producing runtime crashes during inference on certain Android device architectures.
+    
+    \item \textbf{TensorFlow Lite:} Requires a PyTorch $\rightarrow$ ONNX $\rightarrow$ TFLite conversion chain. Each conversion introduces potential numerical drift, and the final TFLite model cannot be directly validated against the PyTorch training weights.
+    
+    \item \textbf{ONNX Runtime Mobile (selected):} The legacy TorchScript-based ONNX exporter with opset 14 provides robust handling of FP16 SwinV2 attention operations. ONNX Runtime 1.24.3 supports graph-level optimizations (constant folding, operator fusion, dead node elimination), multi-threaded CPU inference, and ships with 16 KB page-aligned native libraries required for Android 15 compatibility. The ONNX format also enables cross-platform portability to iOS, web (ONNX.js), and server deployments without re-export.
+\end{itemize}
+
+Models are exported in FP16 half-precision ($\sim$97 MB per model), halving the FP32 weight storage ($\sim$197 MB each). The complete mobile application, bundling all 35 diagnostic models ($\sim$3.33 GB total) and the React Native runtime, produces a self-contained APK suitable for deployment on modern smartphones.
+
+
+% ============================
+% CHAPTER 5: EXPERIMENTAL RESULTS
+% ============================
+\chapter{Experimental Findings}
+
+\section{Hardware Configuration}
+
+All experiments are conducted on a single workstation with the following specification:
+
+\begin{itemize}
+    \item \textbf{CPU:} Intel Core i9-14900HX (24 cores, 32 threads)
+    \item \textbf{GPU:} NVIDIA RTX 4080 Laptop (12 GB GDDR6, Ada Lovelace)
+    \item \textbf{RAM:} 32 GB DDR5-5600
+    \item \textbf{Storage:} NVMe SSD
+    \item \textbf{Software:} Python 3.11, PyTorch 2.5, CUDA 12.4, cuDNN 9.1
+\end{itemize}
+
+\section{Training Configuration}
+
+\begin{table}[H]
+\centering
+\caption{Training hyperparameters.}
+\label{tab:hyperparams}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Batch size & 32 \\
+Backbone LR (max) & $1 \times 10^{-5}$ \\
+Head LR (max) & $3 \times 10^{-4}$ \\
+LR scheduler & OneCycleLR (cosine, 10\% warmup) \\
+Optimizer & AdamW (weight decay = 0.05) \\
+Max epochs & 25 \\
+Early stopping patience & 5 epochs \\
+Backbone freeze epochs & 2 \\
+EMA decay & 0.999 \\
+Label smoothing & $\epsilon = 0.1$ \\
+Focal Loss ($\alpha, \gamma$) & (1.0, 2.0) \\
+CutMix probability & 0.5 \\
+Precision & BFloat16 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Cross-Dataset Merged Training Results}
+
+Table~\ref{tab:merged_results} presents the test set performance for the nine diseases trained using cross-dataset merged training with balanced sampling.
+
+\begin{table}[H]
+\centering
+\caption{Test set results for cross-dataset merged diseases (balanced training, TTA evaluation).}
+\label{tab:merged_results}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+\textbf{Disease} & \textbf{Acc (\%)} & \textbf{AUC} & \textbf{F1} & \textbf{Prec} & \textbf{Recall} & \textbf{Spec} & \textbf{Thresh} \\
+\midrule
+Atelectasis & 77.25 & 0.858 & 0.775 & 0.765 & 0.786 & 0.759 & 0.490 \\
+Cardiomegaly & 78.14 & 0.864 & 0.785 & 0.772 & 0.798 & 0.765 & 0.485 \\
+Consolidation & 61.82 & 0.666 & 0.595 & 0.634 & 0.560 & 0.676 & 0.513 \\
+Edema & 72.34 & 0.800 & 0.717 & 0.734 & 0.701 & 0.746 & 0.499 \\
+Pleural Effusion & 74.17 & 0.823 & 0.726 & 0.773 & 0.684 & 0.799 & 0.512 \\
+Lung Opacity & 76.81 & 0.853 & 0.767 & 0.770 & 0.764 & 0.772 & 0.493 \\
+Pneumonia & 70.01 & 0.774 & 0.718 & 0.678 & 0.763 & 0.638 & 0.495 \\
+Pneumothorax & 67.01 & 0.733 & 0.669 & 0.671 & 0.668 & 0.673 & 0.494 \\
+Melanoma & 84.34 & 0.913 & 0.851 & 0.813 & 0.893 & 0.794 & 0.486 \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.3cm}
+\footnotesize{\textit{Note: All 9 cross-dataset merged models trained with balanced 50/50 undersampling. Thresh = optimal classification threshold determined by Youden's J statistic. All thresholds within 3\% of the ideal 0.5, confirming calibration success.}}
+\end{table}
+
+\section{Single-Source Training Results}
+
+Table~\ref{tab:baseline_results} presents the test set performance for the 26 diseases trained on single-source datasets.
+
+\begingroup\footnotesize
+\setlength{\tabcolsep}{4pt}
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{@{}llcccccc@{}}
+\caption{Test set results for single-source diseases (balanced training, TTA evaluation).} \label{tab:baseline_results} \\
+\toprule
+\textbf{Disease} & \textbf{Dataset} & \textbf{Acc (\%)} & \textbf{AUC} & \textbf{F1} & \textbf{Recall} & \textbf{Spec} & \textbf{Tier} \\
+\midrule
+\endfirsthead
+\multicolumn{8}{c}{\footnotesize\textit{Table~\ref{tab:baseline_results} continued}} \\
+\toprule
+\textbf{Disease} & \textbf{Dataset} & \textbf{Acc (\%)} & \textbf{AUC} & \textbf{F1} & \textbf{Recall} & \textbf{Spec} & \textbf{Tier} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{c}{\textit{Chest X-Ray (NIH)}} \\
+\midrule
+Emphysema & NIH & 81.66 & 0.900 & 0.796 & 0.716 & 0.917 & T1 \\
+Mass & NIH & 75.67 & 0.824 & 0.734 & 0.671 & 0.842 & T2 \\
+Pleural Thickening & NIH & 69.69 & 0.761 & 0.699 & 0.703 & 0.691 & T2 \\
+Fibrosis & NIH & 66.98 & 0.734 & 0.707 & 0.798 & 0.542 & T2 \\
+Nodule & NIH & 67.28 & 0.728 & 0.654 & 0.617 & 0.728 & T2 \\
+Infiltration & NIH & 65.52 & 0.713 & 0.623 & 0.570 & 0.740 & T2 \\
+Hernia$^\dagger$ & NIH & 66.18 & 0.673 & 0.676 & 0.706 & 0.618 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Chest X-Ray (MIMIC / COVID)}} \\
+\midrule
+COVID & COVID-19 & 98.96 & 0.997 & 0.990 & 0.991 & 0.989 & T1 \\
+Viral Pneumonia & COVID-19 & 97.82 & 0.997 & 0.978 & 0.971 & 0.985 & T1 \\
+Lung Lesion & MIMIC & 67.49 & 0.739 & 0.663 & 0.639 & 0.711 & T2 \\
+\makecell[l]{Enlarged\\Cardiomediastinum} & MIMIC & 66.99 & 0.736 & 0.666 & 0.659 & 0.681 & T2 \\
+Fracture$^\ddagger$ & MIMIC & 60.71 & 0.653 & 0.595 & 0.577 & 0.637 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Ophthalmology}} \\
+\midrule
+Myopia & ODIR & 92.59 & 0.960 & 0.925 & 0.907 & 0.944 & T1 \\
+Cataract & ODIR & 90.57 & 0.958 & 0.902 & 0.868 & 0.943 & T1 \\
+Glaucoma & ODIR & 79.84 & 0.870 & 0.803 & 0.823 & 0.774 & T1 \\
+Diabetic Retinopathy & DR Det. & 78.10 & 0.854 & 0.757 & 0.681 & 0.881 & T1 \\
+Diabetes (Fundoscopy) & ODIR & 70.90 & 0.784 & 0.719 & 0.743 & 0.675 & T2 \\
+\makecell[l]{Age-related Macular\\Degeneration$^\dagger$} & ODIR & 66.25 & 0.683 & 0.597 & 0.500 & 0.825 & T3 \\
+Hypertension$^\dagger$ & ODIR & 60.34 & 0.515 & 0.623 & 0.655 & 0.552 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Dermatology}} \\
+\midrule
+Melanocytic Nevi & HAM10000 & 91.19 & 0.964 & 0.913 & 0.926 & 0.898 & T1 \\
+Actinic Keratoses & HAM10000 & 89.13 & 0.941 & 0.896 & 0.935 & 0.848 & T1 \\
+Benign Keratosis & HAM10000 & 87.42 & 0.934 & 0.875 & 0.877 & 0.871 & T1 \\
+Basal Cell Carcinoma & HAM10000 & 86.67 & 0.917 & 0.875 & 0.933 & 0.800 & T1 \\
+Vascular Lesions$^\dagger$ & HAM10000 & 85.19 & 0.899 & 0.857 & 0.889 & 0.815 & T1 \\
+Dermatofibroma$^\dagger$ & HAM10000 & 75.00 & 0.715 & 0.762 & 0.800 & 0.700 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Neurology}} \\
+\midrule
+Dementia & OASIS & 84.78 & 0.926 & 0.848 & 0.848 & 0.848 & T1 \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\noindent\footnotesize{\textit{Tier: T1 = Clinically deployable (AUC $\geq$ 0.85), T2 = Screening aid (0.70--0.85), T3 = Caution required. $^\dagger$Insufficient training data ($<$500 positive samples). $^\ddagger$Fracture: CT is the recommended modality.}}
+\normalsize
+
+\section{Confusion Matrices}
+
+Table~\ref{tab:confusion_all} presents the confusion matrix (TP, FP, TN, FN) for all 35 disease models, providing the raw classification counts from which all derived metrics (Accuracy, AUC, F1, etc.) are computed.
+
+\begingroup\footnotesize
+\setlength{\tabcolsep}{4pt}
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{@{}llrrrrrr@{}}
+\caption{Confusion matrix values for all 35 disease models (balanced test sets, TTA evaluation).} \label{tab:confusion_all} \\
+\toprule
+\textbf{Disease} & \textbf{Source} & \textbf{TP} & \textbf{FP} & \textbf{TN} & \textbf{FN} & \textbf{N$_{\text{test}}$} & \textbf{Tier} \\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Disease} & \textbf{Source} & \textbf{TP} & \textbf{FP} & \textbf{TN} & \textbf{FN} & \textbf{N$_{\text{test}}$} & \textbf{Tier} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{8}{c}{\textit{Cross-Dataset Merged Models}} \\
+\midrule
+Atelectasis & NIH+MIMIC & 12,528 & 3,839 & 12,106 & 3,417 & 31,890 & T1 \\
+Cardiomegaly & NIH+MIMIC & 13,768 & 4,057 & 13,196 & 3,485 & 34,506 & T1 \\
+Lung Opacity & MIMIC+COVID & 10,691 & 3,189 & 10,800 & 3,298 & 27,978 & T1 \\
+Melanoma & HAM+ISIC & 442 & 102 & 393 & 53 & 990 & T1 \\
+Pleural Effusion & NIH+MIMIC & 2,384 & 700 & 2,784 & 1,100 & 6,968 & T2 \\
+Edema & NIH+MIMIC & 7,395 & 2,679 & 7,876 & 3,160 & 21,110 & T2 \\
+Pneumonia & NIH+MIMIC+RSNA & 9,217 & 4,380 & 7,708 & 2,871 & 24,176 & T2 \\
+Pneumothorax & NIH+MIMIC & 2,449 & 1,201 & 2,468 & 1,220 & 7,338 & T2 \\
+Consolidation & NIH+MIMIC & 5,443 & 3,148 & 6,564 & 4,269 & 19,424 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Chest X-Ray (NIH Single-Source)}} \\
+\midrule
+Emphysema & NIH & 250 & 29 & 320 & 99 & 698 & T1 \\
+Mass & NIH & 579 & 136 & 727 & 284 & 1,726 & T2 \\
+Pleural Thickening & NIH & 364 & 160 & 358 & 154 & 1,036 & T2 \\
+Fibrosis & NIH & 209 & 120 & 142 & 53 & 524 & T2 \\
+Nodule & NIH & 600 & 264 & 708 & 372 & 1,944 & T2 \\
+Infiltration & NIH & 1,749 & 797 & 2,270 & 1,318 & 6,134 & T2 \\
+Hernia$^\dagger$ & NIH & 24 & 13 & 21 & 10 & 68 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Chest X-Ray (MIMIC / COVID Single-Source)}} \\
+\midrule
+COVID & COVID-19 & 525 & 6 & 524 & 5 & 1,060 & T1 \\
+Viral Pneumonia & COVID-19 & 200 & 3 & 203 & 6 & 412 & T1 \\
+Lung Lesion & MIMIC & 5,725 & 2,589 & 6,376 & 3,240 & 17,930 & T2 \\
+\makecell[l]{Enlarged\\Cardiomediastinum} & MIMIC & 4,415 & 2,138 & 4,563 & 2,286 & 13,402 & T2 \\
+Fracture$^\ddagger$ & MIMIC & 4,552 & 2,863 & 5,024 & 3,335 & 15,774 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Ophthalmology}} \\
+\midrule
+Myopia & ODIR & 49 & 3 & 51 & 5 & 108 & T1 \\
+Cataract & ODIR & 46 & 3 & 50 & 7 & 106 & T1 \\
+Glaucoma & ODIR & 51 & 14 & 48 & 11 & 124 & T1 \\
+Diabetic Retinopathy & DR Det. & 951 & 166 & 1,231 & 446 & 2,794 & T1 \\
+Diabetes (Fundoscopy) & ODIR & 231 & 101 & 210 & 80 & 622 & T2 \\
+\makecell[l]{Age-related Macular\\Degeneration$^\dagger$} & ODIR & 20 & 7 & 33 & 20 & 80 & T3 \\
+Hypertension$^\dagger$ & ODIR & 19 & 13 & 16 & 10 & 58 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Dermatology}} \\
+\midrule
+Melanocytic Nevi & HAM10000 & 452 & 50 & 438 & 36 & 976 & T1 \\
+Actinic Keratoses & HAM10000 & 43 & 7 & 39 & 3 & 92 & T1 \\
+Benign Keratosis & HAM10000 & 136 & 20 & 135 & 19 & 310 & T1 \\
+Basal Cell Carcinoma & HAM10000 & 70 & 15 & 60 & 5 & 150 & T1 \\
+Vascular Lesions$^\dagger$ & HAM10000 & 24 & 5 & 22 & 3 & 54 & T1 \\
+Dermatofibroma$^\dagger$ & HAM10000 & 16 & 6 & 14 & 4 & 40 & T3 \\
+\midrule
+\multicolumn{8}{c}{\textit{Neurology}} \\
+\midrule
+Dementia & OASIS & 39 & 7 & 39 & 7 & 92 & T1 \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\section{Representative Confusion Matrices}
+
+Figures~\ref{fig:cm_emphysema}--\ref{fig:cm_dementia} present representative confusion matrices from each clinical domain, illustrating the classification performance of the trained models on balanced test sets.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{Emphysema_confusion_matrix.png}
+    \caption{Confusion matrix for Emphysema (NIH, AUC 0.901). Tier 1 chest X-ray model with high specificity (91.7\%).}
+    \label{fig:cm_emphysema}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{COVID_confusion_matrix.png}
+    \caption{Confusion matrix for COVID-19 (COVID-19 dataset, AUC 0.997). Near-perfect classification with only 11 misclassifications out of 1,060 test samples.}
+    \label{fig:cm_covid}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{nv_confusion_matrix.png}
+    \caption{Confusion matrix for Melanocytic Nevi (HAM10000, AUC 0.964). Tier 1 dermatology model with balanced sensitivity and specificity.}
+    \label{fig:cm_nv}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{Myopia_confusion_matrix.png}
+    \caption{Confusion matrix for Pathological Myopia (ODIR, AUC 0.960). Strong performance despite small dataset (108 test samples).}
+    \label{fig:cm_myopia}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.55\textwidth]{Dementia_confusion_matrix.png}
+    \caption{Confusion matrix for Dementia (OASIS MRI, AUC 0.926). Symmetric errors (7 FP, 7 FN) reflect well-calibrated classification.}
+    \label{fig:cm_dementia}
+\end{figure}
+
+\section{Impact of Balanced Sampling}
+
+The effect of class-balanced undersampling on classification threshold stability is demonstrated through the Atelectasis results:
+
+\begin{itemize}
+    \item \textbf{Optimal threshold:} 0.4902 (near-ideal 0.5), confirming that balanced training eliminates threshold mismatch.
+    \item \textbf{Precision-Recall balance:} 0.765 vs. 0.786, indicating no systematic bias toward either class.
+    \item \textbf{Specificity-Sensitivity balance:} 0.759 vs. 0.786, further confirming balanced decision boundaries.
+\end{itemize}
+
+\section{Training Dynamics}
+
+Figure~\ref{fig:loss_curve} illustrates the training dynamics for Atelectasis, showing the characteristic behavior of the differential learning rate strategy:
+
+\begin{itemize}
+    \item \textbf{Epochs 1--2 (Frozen backbone):} Rapid head convergence (val loss: $0.1471 \rightarrow 0.1447$)
+    \item \textbf{Epoch 3 (Unfreeze):} Val loss drops sharply to 0.1315 as the backbone begins medical feature adaptation
+    \item \textbf{Epochs 3--16:} Steady improvement with 14 consecutive val loss improvements
+    \item \textbf{Epochs 17--24:} Gradual convergence with early stopping at epoch 24
+\end{itemize}
+
+% Placeholder for actual loss curve figure
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{atelectasis_loss_curve.png}
+%     \caption{Training and validation loss curves for Atelectasis (merged NIH + MIMIC).}
+%     \label{fig:loss_curve}
+% \end{figure}
+
+
+% ============================
+% CHAPTER 6: SUMMARY AND FUTURE WORK
+% ============================
+\chapter{Summary and Future Plan of Work}
+
+\section{Summary}
+
+This project presents a comprehensive, end-to-end framework for explainable medical image diagnosis that addresses the critical gap between deep learning performance and clinical interpretability. The key contributions and findings are:
+
+\begin{enumerate}
+    \item \textbf{Multi-domain integration:} We successfully harmonized eleven heterogeneous medical imaging datasets across five clinical specialties into a unified training pipeline, demonstrating that a single architecture (SwinV2-S with multi-modal fusion) can serve as a universal diagnostic backbone.
+    
+    \item \textbf{Balanced training:} Deterministic class-balanced undersampling, combined with differential learning rates ($10^{-5}$ for backbone, $3 \times 10^{-4}$ for head), produces stable, unbiased classifiers with natural thresholds near 0.5. This approach is simpler and more interpretable than weighted loss functions or weighted sampling strategies.
+    
+    \item \textbf{Explainability:} The five-method attribution framework (SAS, Grad-CAM, IG, Occlusion, CAM) provides multi-scale explanations from coarse region-level attention to pixel-level feature attribution, with automated clinical localization using Otsu thresholding and morphological processing. All heatmaps are accompanied by plain-language clinical interpretation briefs designed for non-technical medical professionals.
+    
+    \item \textbf{On-device explainability:} Two explainability methods --- CAM and Occlusion Sensitivity --- are implemented entirely on-device in the mobile Kotlin bridge. CAM heatmaps are generated at near-zero cost using pre-extracted classification weights and the ONNX model's spatial feature map output ($8 \times 8 \times 768$). Occlusion sensitivity is performed via a 16-pass perturbation analysis ($4 \times 4$ grid). Both methods produce heatmap overlays embedded in the on-device PDF clinical report, providing full diagnostic transparency without any server connectivity.
+    
+    \item \textbf{Edge deployment:} All 35 models are exported to ONNX format and bundled into a fully offline Android application with ONNX Runtime Mobile for on-device inference. A custom native Kotlin bridge enables real-time inference with TTA (original $+$ horizontal flip averaging), achieving point-of-care diagnostics without any cloud connectivity. An APK-aware model caching mechanism ensures that updated models are automatically re-deployed when a new APK is installed. Clinical reports are generated using a dual-mode synthesizer --- an edge LLM (Qwen2.5-3B-Instruct) when available on the desktop API, and a deterministic template engine on mobile --- both grounded in model predictions and anatomical localization.
+\end{enumerate}
+
+\section{Future Plan of Work}
+
+Several directions for extending this work are identified:
+
+\begin{enumerate}
+    \item \textbf{Multi-task learning:} Instead of training 35 independent binary classifiers, a multi-task architecture with shared visual features and disease-specific heads could significantly reduce total model count and leverage positive transfer between related pathologies.
+    
+    \item \textbf{Vision-Language Models:} Integrating large vision-language models (e.g., BiomedCLIP) for zero-shot or few-shot diagnosis could eliminate the need for per-disease fine-tuning and enable open-vocabulary pathology detection.
+    
+    \item \textbf{Uncertainty quantification:} Monte Carlo Dropout or deep ensemble methods could provide calibrated uncertainty estimates alongside predictions, enabling the model to flag cases where it is unsure and defer to human experts.
+    
+    \item \textbf{Federated learning:} Training across institutional boundaries without sharing patient data would address privacy concerns and enable broader data access, particularly for rare pathologies.
+    
+    \item \textbf{Enhanced explainability:} Concept-based explanations (e.g., ``the model detected pleural effusion because of a meniscus sign in the left costophrenic angle'') would be more clinically meaningful than spatial attribution maps alone.
+    
+    \item \textbf{Clinical validation:} Prospective clinical trials comparing the model's diagnostic accuracy and explainability against radiologist assessments would be essential for regulatory approval and clinical adoption.
+\end{enumerate}
+
+
+% ============================================================================
+% REFERENCES
+% ============================================================================
+\begin{thebibliography}{99}
+
+\bibitem{rajpurkar2017chexnet}
+P. Rajpurkar, J. Irvin, K. Zhu, et al., ``CheXNet: Radiologist-level pneumonia detection on chest X-rays with deep learning,'' \textit{arXiv preprint arXiv:1711.05225}, 2017.
+
+\bibitem{bruno2015understanding}
+M. A. Bruno, E. A. Walker, and H. H. Abujudeh, ``Understanding and confronting our mistakes: The epidemiology of error in radiology and strategies for error reduction,'' \textit{RadioGraphics}, vol. 35, no. 6, pp. 1668--1676, 2015.
+
+\bibitem{dosovitskiy2020image}
+A. Dosovitskiy, L. Beyer, A. Kolesnikov, et al., ``An image is worth 16x16 words: Transformers for image recognition at scale,'' \textit{ICLR}, 2021.
+
+\bibitem{liu2021swin}
+Z. Liu, Y. Lin, Y. Cao, et al., ``Swin Transformer: Hierarchical vision transformer using shifted windows,'' \textit{ICCV}, pp. 10012--10022, 2021.
+
+\bibitem{liu2022swinv2}
+Z. Liu, H. Hu, Y. Lin, et al., ``Swin Transformer V2: Scaling up capacity and resolution,'' \textit{CVPR}, pp. 12009--12019, 2022.
+
+\bibitem{irvin2019chexpert}
+J. Irvin, P. Rajpurkar, M. Ko, et al., ``CheXpert: A large chest radiograph dataset with uncertainty labels and expert comparison,'' \textit{AAAI}, vol. 33, pp. 590--597, 2019.
+
+\bibitem{huang2020multimodal}
+S.-C. Huang, A. Pareek, S. Seyyedi, I. Banerjee, and M. P. Lungren, ``Fusion of medical imaging and electronic health records using deep learning: A systematic review and implementation guidelines,'' \textit{NPJ Digital Medicine}, vol. 3, no. 1, pp. 1--9, 2020.
+
+\bibitem{acosta2022multimodal}
+J. N. Acosta, G. J. Falcone, P. Rajpurkar, and E. J. Topol, ``Multimodal biomedical AI,'' \textit{Nature Medicine}, vol. 28, no. 9, pp. 1773--1784, 2022.
+
+\bibitem{selvaraju2017gradcam}
+R. R. Selvaraju, M. Cogswell, A. Das, R. Vedantam, D. Parikh, and D. Batra, ``Grad-CAM: Visual explanations from deep networks via gradient-based localization,'' \textit{ICCV}, pp. 618--626, 2017.
+
+\bibitem{sundararajan2017axiomatic}
+M. Sundararajan, A. Taly, and Q. Yan, ``Axiomatic attribution for deep networks,'' \textit{ICML}, pp. 3319--3328, 2017.
+
+\bibitem{zeiler2014visualizing}
+M. D. Zeiler and R. Fergus, ``Visualizing and understanding convolutional networks,'' \textit{ECCV}, pp. 818--833, 2014.
+
+\bibitem{abnar2020quantifying}
+S. Abnar and W. Zuidema, ``Quantifying attention flow in transformers,'' \textit{ACL}, pp. 4190--4197, 2020.
+
+\bibitem{johnson2019mimic}
+A. E. W. Johnson, T. J. Pollard, N. R. Greenbaum, et al., ``MIMIC-CXR-JPG, a large publicly available database of labeled chest radiographs,'' \textit{arXiv preprint arXiv:1901.07042}, 2019.
+
+\bibitem{chawla2002smote}
+N. V. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer, ``SMOTE: Synthetic minority over-sampling technique,'' \textit{Journal of AI Research}, vol. 16, pp. 321--357, 2002.
+
+\bibitem{lin2017focal}
+T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll\'{a}r, ``Focal loss for dense object detection,'' \textit{ICCV}, pp. 2980--2988, 2017.
+
+\bibitem{cubuk2020randaugment}
+E. D. Cubuk, B. Zoph, J. Shlens, and Q. V. Le, ``RandAugment: Practical automated data augmentation with a reduced search space,'' \textit{CVPR Workshops}, 2020.
+
+\bibitem{yun2019cutmix}
+S. Yun, D. Han, S. J. Oh, S. Chun, J. Choe, and Y. Yoo, ``CutMix: Regularization strategy to train strong classifiers with localizable features,'' \textit{ICCV}, pp. 6023--6032, 2019.
+
+\bibitem{smith2019super}
+L. N. Smith and N. Topin, ``Super-convergence: Very fast training of neural networks using large learning rates,'' \textit{Artificial Intelligence and Machine Learning for Multi-Domain Operations Applications}, vol. 11006, pp. 369--386, 2019.
+
+\bibitem{pytorch2019}
+A. Paszke, S. Gross, F. Massa, et al., ``PyTorch: An imperative style, high-performance deep learning library,'' \textit{NeurIPS}, pp. 8024--8035, 2019.
+
+\bibitem{tschandl2018ham}
+P. Tschandl, C. Rosendahl, and H. Kittler, ``The HAM10000 dataset, a large collection of multi-source dermatoscopic images of common pigmented skin lesions,'' \textit{Scientific Data}, vol. 5, no. 180161, 2018.
+
+\bibitem{marcus2007oasis}
+D. S. Marcus, T. H. Wang, J. Parker, J. G. Csernansky, J. C. Morris, and R. L. Buckner, ``Open access series of imaging studies (OASIS): Cross-sectional MRI data in young, middle aged, nondemented and demented older adults,'' \textit{Journal of Cognitive Neuroscience}, vol. 19, no. 9, pp. 1498--1507, 2007.
+
+\bibitem{wang2017nihcxr}
+X. Wang, Y. Peng, L. Lu, Z. Lu, M. Bagheri, and R. M. Summers, ``ChestX-ray8: Hospital-scale chest X-ray database and benchmarks,'' \textit{CVPR}, pp. 2097--2106, 2017.
+
+\end{thebibliography}
+
+
+% ============================================================================
+% APPENDIX
+% ============================================================================
+\appendix
+\chapter{System Architecture}
+
+The complete system architecture is organized as follows:
+
+\begin{verbatim}
+MTP/
++-- src/
+|   +-- data/
+|   |   +-- dataset.py              # UniversalMedicalDataset
+|   |   +-- metadata_parser.py      # Multi-domain label parser
+|   +-- models/
+|   |   +-- train_baseline.py       # Single-source training
+|   |   +-- export_edge.py          # Edge model export
+|   +-- explain/
+|   |   +-- methods.py              # Captum-based attribution
+|   |   +-- sas.py                  # Semantic Attention Synthesis
+|   |   +-- visualize.py            # Clinical localization
+|   |   +-- vlm_synthesizer.py      # Report synthesis
+|   +-- api/
+|       +-- main.py                 # FastAPI inference server
+|       +-- pdf_generator.py        # Clinical PDF reports
++-- mobile_app/
+|   +-- App.js                      # React Native UI (1167 lines)
+|   +-- android/app/src/main/java/
+|   |   +-- PytorchBridgeModule.kt  # ONNX Runtime inference bridge
+|   |   +-- PytorchBridgePackage.kt # RN package registration
+|   |   +-- MainApplication.kt     # App entry point
+|   +-- assets/
+|       +-- *_mobile.onnx (x35)     # ONNX Runtime models
++-- train_merged.py                 # Cross-dataset merged training
++-- export_mobile.py                # ONNX model export
++-- retrain_all.bat                 # Full pipeline orchestrator
++-- datasets/
+    +-- chestxray/    (NIH, MIMIC, COVID-19, RSNA)
+    +-- dermatology/  (HAM10000, ISIC 2018, ISIC 2024)
+    +-- ophthalmology/ (ODIR, DR Detection)
+    +-- brain/        (OASIS)
+\end{verbatim}
+
+\chapter{Detailed Disease Taxonomy}
+
+The 35 diagnostic targets span five clinical domains:
+
+\begingroup\footnotesize
+\setlength{\tabcolsep}{4pt}
+\setlength{\LTleft}{0pt plus 1fill}
+\setlength{\LTright}{0pt plus 1fill}
+\begin{longtable}{@{}clll@{}}
+\toprule
+\textbf{\#} & \textbf{Disease} & \textbf{Domain} & \textbf{Training Type} \\
+\midrule
+\endhead
+1 & Atelectasis & Radiology & Merged (NIH + MIMIC) \\
+2 & Cardiomegaly & Radiology & Merged (NIH + MIMIC) \\
+3 & Consolidation & Radiology & Merged (NIH + MIMIC) \\
+4 & Edema & Radiology & Merged (NIH + MIMIC) \\
+5 & Pleural Effusion & Radiology & Merged (NIH + MIMIC) \\
+6 & Lung Opacity & Radiology & Merged (MIMIC + COVID) \\
+7 & Pneumonia & Radiology & Merged (NIH + MIMIC + RSNA) \\
+8 & Pneumothorax & Radiology & Merged (NIH + MIMIC) \\
+9 & Melanoma & Dermatology & Merged (HAM + ISIC) \\
+10 & Emphysema & Radiology & Single (NIH) \\
+11 & Fibrosis & Radiology & Single (NIH) \\
+12 & Hernia & Radiology & Single (NIH) \\
+13 & Infiltration & Radiology & Single (NIH) \\
+14 & Mass & Radiology & Single (NIH) \\
+15 & Nodule & Radiology & Single (NIH) \\
+16 & Pleural Thickening & Radiology & Single (NIH) \\
+17 & Enlarged Cardiomediastinum & Radiology & Single (MIMIC) \\
+18 & Fracture & Radiology & Single (MIMIC) \\
+19 & Lung Lesion & Radiology & Single (MIMIC) \\
+20 & COVID & Radiology & Single (COVID-19) \\
+21 & Viral Pneumonia & Radiology & Single (COVID-19) \\
+22 & Age-related Macular Degeneration & Ophthalmology & Single (ODIR) \\
+23 & Cataract & Ophthalmology & Single (ODIR) \\
+24 & Diabetic Retinopathy (Fundoscopy) & Ophthalmology & Single (ODIR) \\
+25 & Glaucoma & Ophthalmology & Single (ODIR) \\
+26 & Hypertensive Retinopathy & Ophthalmology & Single (ODIR) \\
+27 & Pathological Myopia & Ophthalmology & Single (ODIR) \\
+28 & Diabetic Retinopathy & Ophthalmology & Single (DR Det.) \\
+29 & Actinic Keratoses (Bowen's Disease) & Dermatology & Single (HAM10000) \\
+30 & Basal Cell Carcinoma & Dermatology & Single (HAM10000) \\
+31 & Benign Keratosis (Seborrheic Keratosis) & Dermatology & Single (HAM10000) \\
+32 & Dermatofibroma & Dermatology & Single (HAM10000) \\
+33 & Melanocytic Nevi & Dermatology & Single (HAM10000) \\
+34 & Vascular Lesions (Angiomas) & Dermatology & Single (HAM10000) \\
+35 & Dementia & Neurology & Single (OASIS) \\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\end{document}

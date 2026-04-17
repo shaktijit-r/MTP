@@ -1,0 +1,208 @@
+
+============================================================
+MERGED TRAINING: Atelectasis
+Sources: 2 datasets
+  - NIH -> target='Atelectasis'
+  - MIMIC -> target='Atelectasis'
+Device: cuda | batch=48 | eff_batch=96 | workers=8 | EMA=0.999
+============================================================
+  [OK] NIH: train=78484 (pos=8117, neg=70367), meta=4D
+  [OK] MIMIC: train=181326 (pos=114747, neg=66579), meta=4D
+pos_weight=1.115 (pos=122864, neg=136946)
+Metadata: [4, 4] -> pad to 4D
+Merged: train=259810, val=55674, test=55674
+WeightedRandomSampler: balanced batches enabled
+Creating DataLoaders (spawning workers, may take 30-60s on Windows)...
+DataLoaders ready. 5413 train batches, 1160 val batches.
+Loading SwinV2-S pretrained weights...
+Model: SwinV2-S + MultiModalFusion (vision=768D, meta=4D) [channels_last]
+Running CUDA warmup batch (cuDNN benchmarking algorithms, ~1-3 min)...
+CUDA warmup complete. Starting training loop.
+Epoch 01/50 | Train Loss: 0.1810 | Val Loss: 0.1648 | 35.2min/epoch | Elapsed: 35min | ETA: 1723min
+  [+] Val loss improved. EMA model saved.
+Epoch 02/50 | Train Loss: 0.1683 | Val Loss: 0.1536 | 34.8min/epoch | Elapsed: 70min | ETA: 1669min
+  [+] Val loss improved. EMA model saved.
+Epoch 03/50 | Train Loss: 0.1661 | Val Loss: 0.1497 | 34.8min/epoch | Elapsed: 105min | ETA: 1637min
+  [+] Val loss improved. EMA model saved.
+Epoch 04/50 | Train Loss: 0.1645 | Val Loss: 0.1495 | 34.8min/epoch | Elapsed: 140min | ETA: 1599min
+  [+] Val loss improved. EMA model saved.
+Epoch 05/50 | Train Loss: 0.1636 | Val Loss: 0.1492 | 34.8min/epoch | Elapsed: 174min | ETA: 1565min
+  [+] Val loss improved. EMA model saved.
+Epoch 06/50 | Train Loss: 0.1622 | Val Loss: 0.1467 | 34.7min/epoch | Elapsed: 209min | ETA: 1529min
+  [+] Val loss improved. EMA model saved.
+Epoch 07/50 | Train Loss: 0.1619 | Val Loss: 0.1463 | 34.8min/epoch | Elapsed: 244min | ETA: 1498min
+  [+] Val loss improved. EMA model saved.
+Epoch 08/50 | Train Loss: 0.1611 | Val Loss: 0.1460 | 34.7min/epoch | Elapsed: 279min | ETA: 1459min
+  [+] Val loss improved. EMA model saved.
+Epoch 09/50 | Train Loss: 0.1603 | Val Loss: 0.1455 | 34.7min/epoch | Elapsed: 313min | ETA: 1423min
+  [+] Val loss improved. EMA model saved.
+Epoch 10/50 | Train Loss: 0.1597 | Val Loss: 0.1463 | 34.7min/epoch | Elapsed: 348min | ETA: 1389min
+  [-] No improvement for 1 epochs.
+Epoch 11/50 | Train Loss: 0.1594 | Val Loss: 0.1455 | 34.8min/epoch | Elapsed: 383min | ETA: 1358min
+  [+] Val loss improved. EMA model saved.
+Epoch 12/50 | Train Loss: 0.1582 | Val Loss: 0.1437 | 34.7min/epoch | Elapsed: 418min | ETA: 1319min
+  [+] Val loss improved. EMA model saved.
+Epoch 13/50 | Train Loss: 0.1579 | Val Loss: 0.1445 | 34.8min/epoch | Elapsed: 452min | ETA: 1287min
+  [-] No improvement for 1 epochs.
+Epoch 14/50 | Train Loss: 0.1569 | Val Loss: 0.1444 | 34.7min/epoch | Elapsed: 487min | ETA: 1250min
+  [-] No improvement for 2 epochs.
+Epoch 15/50 | Train Loss: 0.1566 | Val Loss: 0.1425 | 34.8min/epoch | Elapsed: 522min | ETA: 1220min
+  [+] Val loss improved. EMA model saved.
+Epoch 16/50 | Train Loss: 0.1562 | Val Loss: 0.1429 | 34.8min/epoch | Elapsed: 557min | ETA: 1184min
+  [-] No improvement for 1 epochs.
+Epoch 17/50 | Train Loss: 0.1554 | Val Loss: 0.1418 | 34.7min/epoch | Elapsed: 591min | ETA: 1145min
+  [+] Val loss improved. EMA model saved.
+Epoch 18/50 | Train Loss: 0.1548 | Val Loss: 0.1411 | 34.7min/epoch | Elapsed: 626min | ETA: 1111min
+  [+] Val loss improved. EMA model saved.
+Epoch 19/50 | Train Loss: 0.1545 | Val Loss: 0.1412 | 34.7min/epoch | Elapsed: 661min | ETA: 1077min
+  [-] No improvement for 1 epochs.
+Epoch 20/50 | Train Loss: 0.1542 | Val Loss: 0.1390 | 34.7min/epoch | Elapsed: 696min | ETA: 1040min
+  [+] Val loss improved. EMA model saved.
+Epoch 21/50 | Train Loss: 0.1524 | Val Loss: 0.1388 | 34.7min/epoch | Elapsed: 730min | ETA: 1007min
+  [+] Val loss improved. EMA model saved.
+Epoch 22/50 | Train Loss: 0.1514 | Val Loss: 0.1389 | 34.7min/epoch | Elapsed: 765min | ETA: 972min
+  [-] No improvement for 1 epochs.
+Epoch 23/50 | Train Loss: 0.1512 | Val Loss: 0.1396 | 34.7min/epoch | Elapsed: 800min | ETA: 937min
+  [-] No improvement for 2 epochs.
+Epoch 24/50 | Train Loss: 0.1501 | Val Loss: 0.1389 | 34.7min/epoch | Elapsed: 835min | ETA: 903min
+  [-] No improvement for 3 epochs.
+
+============================================================
+MERGED TRAINING: Atelectasis
+Sources: 2 datasets
+  - NIH -> target='Atelectasis'
+  - MIMIC -> target='Atelectasis'
+Device: cuda | batch=32 | workers=8 | EMA=0.999
+============================================================
+  [OK] NIH: train=16234 (pos=8117, neg=8117), meta=4D
+  [OK] MIMIC: train=133158 (pos=66579, neg=66579), meta=4D
+Metadata: [4, 4] -> pad to 4D
+Merged: train=149392, val=31768, test=31890
+Balanced 50/50 — no pos_weight needed, threshold=0.5 is optimal
+Creating DataLoaders (spawning workers, may take 30-60s on Windows)...
+DataLoaders ready. 4668 train batches, 993 val batches.
+Loading SwinV2-S pretrained weights...
+Model: SwinV2-S + MultiModalFusion (vision=768D, meta=4D) [channels_last]
+Running CUDA warmup batch (cuDNN benchmarking, ~1-3 min)...
+CUDA warmup complete. Starting training loop.
+Backbone FROZEN for 2 epochs (head warmup)
+Epoch 01/25 | Train Loss: 0.1601 | Val Loss: 0.1478 | 7.9min/epoch | Elapsed: 8min | ETA: 191min
+  [+] Val loss improved. EMA model saved.
+Epoch 02/25 | Train Loss: 0.1567 | Val Loss: 0.1454 | 7.7min/epoch | Elapsed: 16min | ETA: 177min
+  [+] Val loss improved. EMA model saved.
+Backbone UNFROZEN — full fine-tuning
+Epoch 03/25 | Train Loss: 0.1736 | Val Loss: 0.1733 | 19.5min/epoch | Elapsed: 35min | ETA: 429min
+  [-] No improvement for 1 epochs.
+Epoch 04/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 19.4min/epoch | Elapsed: 55min | ETA: 407min
+  [-] No improvement for 2 epochs.
+Epoch 05/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 19.4min/epoch | Elapsed: 74min | ETA: 388min
+  [-] No improvement for 3 epochs.
+Epoch 06/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 19.3min/epoch | Elapsed: 93min | ETA: 366min
+  [-] No improvement for 4 epochs.
+Epoch 07/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 19.3min/epoch | Elapsed: 113min | ETA: 348min
+  [-] No improvement for 5 epochs.
+Early stopping after 7 epochs!
+Training Complete. Time: 112.53 minutes.
+Evaluating (EMA + TTA)...
+Test Set Results:
+  Accuracy: 71.5334
+  AUC-ROC: 0.7852
+  Optimal_Threshold: 0.4709
+  F1: 0.7218
+  Precision: 0.7058
+  Recall (Sensitivity): 0.7386
+  Specificity: 0.6921
+  TP: 11777
+  FP: 4910
+  TN: 11035
+  FN: 4168
+  Test Loss: 0.1460
+[DONE] Atelectasis
+
+
+============================================================
+MERGED TRAINING: Atelectasis
+Sources: 2 datasets
+  - NIH -> target='Atelectasis'
+  - MIMIC -> target='Atelectasis'
+Device: cuda | batch=32 | workers=8 | EMA=0.999
+============================================================
+  [OK] NIH: train=16234 (pos=8117, neg=8117), meta=4D
+  [OK] MIMIC: train=133158 (pos=66579, neg=66579), meta=4D
+Metadata: [4, 4] -> pad to 4D
+Merged: train=149392, val=31768, test=31890
+Balanced 50/50 — no pos_weight needed, threshold=0.5 is optimal
+Creating DataLoaders (spawning workers, may take 30-60s on Windows)...
+DataLoaders ready. 4668 train batches, 993 val batches.
+Loading SwinV2-S pretrained weights...
+Model: SwinV2-S + MultiModalFusion (vision=768D, meta=4D) [channels_last]
+Running CUDA warmup batch (cuDNN benchmarking, ~1-3 min)...
+CUDA warmup complete. Starting training loop.
+Backbone FROZEN for 2 epochs (head warmup)
+Epoch 01/25 | Train Loss: 0.1597 | Val Loss: 0.1471 | 8.3min/epoch | Elapsed: 8min | ETA: 198min
+  [+] Val loss improved. EMA model saved.
+Epoch 02/25 | Train Loss: 0.1568 | Val Loss: 0.1447 | 7.7min/epoch | Elapsed: 16min | ETA: 177min
+  [+] Val loss improved. EMA model saved.
+Backbone UNFROZEN — full fine-tuning
+Epoch 03/25 | Train Loss: 0.1504 | Val Loss: 0.1315 | 19.5min/epoch | Elapsed: 35min | ETA: 429min
+  [+] Val loss improved. EMA model saved.
+Epoch 04/25 | Train Loss: 0.1473 | Val Loss: 0.1285 | 19.3min/epoch | Elapsed: 55min | ETA: 406min
+  [+] Val loss improved. EMA model saved.
+Epoch 05/25 | Train Loss: 0.1455 | Val Loss: 0.1272 | 19.4min/epoch | Elapsed: 74min | ETA: 387min
+  [+] Val loss improved. EMA model saved.
+Epoch 06/25 | Train Loss: 0.1444 | Val Loss: 0.1265 | 19.4min/epoch | Elapsed: 94min | ETA: 368min
+  [+] Val loss improved. EMA model saved.
+Epoch 07/25 | Train Loss: 0.1440 | Val Loss: 0.1257 | 19.3min/epoch | Elapsed: 113min | ETA: 348min
+  [+] Val loss improved. EMA model saved.
+Epoch 08/25 | Train Loss: 0.1432 | Val Loss: 0.1255 | 19.3min/epoch | Elapsed: 132min | ETA: 328min
+  [+] Val loss improved. EMA model saved.
+Epoch 09/25 | Train Loss: 0.1428 | Val Loss: 0.1248 | 19.3min/epoch | Elapsed: 152min | ETA: 309min
+  [+] Val loss improved. EMA model saved.
+Epoch 10/25 | Train Loss: 0.1424 | Val Loss: 0.1247 | 19.3min/epoch | Elapsed: 171min | ETA: 290min
+  [+] Val loss improved. EMA model saved.
+Epoch 11/25 | Train Loss: 0.1417 | Val Loss: 0.1243 | 19.3min/epoch | Elapsed: 190min | ETA: 270min
+  [+] Val loss improved. EMA model saved.
+Epoch 12/25 | Train Loss: 0.1410 | Val Loss: 0.1242 | 19.4min/epoch | Elapsed: 210min | ETA: 252min
+  [+] Val loss improved. EMA model saved.
+Epoch 13/25 | Train Loss: 0.1409 | Val Loss: 0.1236 | 19.3min/epoch | Elapsed: 229min | ETA: 232min
+  [+] Val loss improved. EMA model saved.
+Epoch 14/25 | Train Loss: 0.1399 | Val Loss: 0.1235 | 19.3min/epoch | Elapsed: 248min | ETA: 212min
+  [+] Val loss improved. EMA model saved.
+Epoch 15/25 | Train Loss: 0.1404 | Val Loss: 0.1234 | 19.3min/epoch | Elapsed: 268min | ETA: 193min
+  [+] Val loss improved. EMA model saved.
+Epoch 16/25 | Train Loss: 0.1399 | Val Loss: 0.1233 | 19.3min/epoch | Elapsed: 287min | ETA: 174min
+  [+] Val loss improved. EMA model saved.
+Epoch 17/25 | Train Loss: 0.1393 | Val Loss: 0.1234 | 19.3min/epoch | Elapsed: 306min | ETA: 154min
+  [-] No improvement for 1 epochs.
+Epoch 18/25 | Train Loss: 0.1398 | Val Loss: 0.1233 | 19.3min/epoch | Elapsed: 325min | ETA: 135min
+  [-] No improvement for 2 epochs.
+Epoch 19/25 | Train Loss: 0.1395 | Val Loss: 0.1233 | 19.3min/epoch | Elapsed: 345min | ETA: 116min
+  [+] Val loss improved. EMA model saved.
+Epoch 20/25 | Train Loss: 0.1387 | Val Loss: 0.1234 | 19.3min/epoch | Elapsed: 364min | ETA: 96min
+  [-] No improvement for 1 epochs.
+Epoch 21/25 | Train Loss: 0.1382 | Val Loss: 0.1234 | 19.3min/epoch | Elapsed: 383min | ETA: 77min
+  [-] No improvement for 2 epochs.
+Epoch 22/25 | Train Loss: 0.1382 | Val Loss: 0.1235 | 19.3min/epoch | Elapsed: 403min | ETA: 58min
+  [-] No improvement for 3 epochs.
+Epoch 23/25 | Train Loss: 0.1381 | Val Loss: 0.1234 | 19.2min/epoch | Elapsed: 422min | ETA: 38min
+  [-] No improvement for 4 epochs.
+Epoch 24/25 | Train Loss: 0.1381 | Val Loss: 0.1235 | 19.3min/epoch | Elapsed: 441min | ETA: 19min
+  [-] No improvement for 5 epochs.
+Early stopping after 24 epochs!
+Training Complete. Time: 441.04 minutes.
+Evaluating (EMA + TTA)...
+Test Set Results:
+  Accuracy: 77.2468
+  AUC-ROC: 0.8580
+  Optimal_Threshold: 0.4902
+  F1: 0.7754
+  Precision: 0.7654
+  Recall (Sensitivity): 0.7857
+  Specificity: 0.7592
+  TP: 12528
+  FP: 3839
+  TN: 12106
+  FN: 3417
+  Test Loss: 0.1249
+[DONE] Atelectasis
+

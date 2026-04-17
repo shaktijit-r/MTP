@@ -1,0 +1,81 @@
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# ── Large binary files (models, datasets) ──
+experiments/NIH/
+experiments/MIMIC/
+experiments/ISIC_2024/
+experiments/ISIC_2018/
+experiments/HAM10000/
+experiments/ODIR/
+experiments/OASIS/
+experiments/covid-19/
+experiments/diabetic-retinopathy-detection/
+experiments/rsna-pneumonia-detection-challenge/
+experiments/merged/*.pth
+experiments/reports/
+experiments/api_temp/
+experiments/rag/
+experiments/explainability/
+datasets/
+
+# ── Mobile ONNX models + CAM weights (too large for git) ──
+mobile_app/assets/*.onnx
+mobile_app/assets/cam_weights/
+mobile_app/android/app/src/main/assets/
+mobile_app/android/app/build/
+mobile_app/android/.gradle/
+mobile_app/node_modules/
+mobile_app/.expo/
+mobile_app/.idea/
+
+# ── Test images (generated, can be regenerated) ──
+test_images/
+
+# ── IDE & OS ──
+.vscode/
+.pyre/
+*.log
+*.aux
+*.lof
+*.lot
+*.out
+*.toc
+*.synctex.gz
+.DS_Store
+Thumbs.db
+pyrightconfig.json
+mobile_app/.idea/
+
+# ── One-off debug/utility scripts ──
+debug_clone.py
+test_trace.py
+audit_labels.py
+check_balance.py
+sweep_metadata.py
+scan_datasets.py
+clean_datasets.py
+download_gguf.py
+cleanup_old.bat
+enrich_oasis.py
+preprocess_oasis.py
+
+# ── Report build artifacts & compiled outputs ──
+report/*.aux
+report/*.log
+report/*.lof
+report/*.lot
+report/*.out
+report/*.toc
+report/*.synctex.gz
+report/*.pdf
+report/*.docx
+
+# ── Qwen LLM cache ──
+*.gguf

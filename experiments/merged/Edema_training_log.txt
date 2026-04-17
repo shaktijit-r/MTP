@@ -1,0 +1,128 @@
+
+============================================================
+MERGED TRAINING: Edema
+Sources: 2 datasets
+  - NIH -> target='Edema'
+  - MIMIC -> target='Edema'
+Device: cuda | batch=32 | workers=8 | EMA=0.999
+============================================================
+  [OK] NIH: train=3254 (pos=1627, neg=1627), meta=4D
+  [OK] MIMIC: train=96504 (pos=48252, neg=48252), meta=4D
+Metadata: [4, 4] -> pad to 4D
+Merged: train=99758, val=21490, test=21110
+Balanced 50/50 — no pos_weight needed, threshold=0.5 is optimal
+Creating DataLoaders (spawning workers, may take 30-60s on Windows)...
+DataLoaders ready. 3117 train batches, 672 val batches.
+Loading SwinV2-S pretrained weights...
+Model: SwinV2-S + MultiModalFusion (vision=768D, meta=4D) [channels_last]
+Running CUDA warmup batch (cuDNN benchmarking, ~1-3 min)...
+CUDA warmup complete. Starting training loop.
+Backbone FROZEN for 2 epochs (head warmup)
+Epoch 01/25 | Train Loss: 0.1632 | Val Loss: 0.1549 | 5.3min/epoch | Elapsed: 5min | ETA: 126min
+  [+] Val loss improved. EMA model saved.
+Epoch 02/25 | Train Loss: 0.1608 | Val Loss: 0.1533 | 4.9min/epoch | Elapsed: 10min | ETA: 113min
+  [+] Val loss improved. EMA model saved.
+Backbone UNFROZEN — full fine-tuning
+Epoch 03/25 | Train Loss: 0.1735 | Val Loss: 0.1733 | 13.0min/epoch | Elapsed: 23min | ETA: 286min
+  [-] No improvement for 1 epochs.
+Epoch 04/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 13.0min/epoch | Elapsed: 36min | ETA: 273min
+  [-] No improvement for 2 epochs.
+Epoch 05/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 13.0min/epoch | Elapsed: 49min | ETA: 260min
+  [-] No improvement for 3 epochs.
+Epoch 06/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 13.0min/epoch | Elapsed: 62min | ETA: 247min
+  [-] No improvement for 4 epochs.
+Epoch 07/25 | Train Loss: 0.1733 | Val Loss: 0.1733 | 13.0min/epoch | Elapsed: 75min | ETA: 234min
+  [-] No improvement for 5 epochs.
+Early stopping after 7 epochs!
+Training Complete. Time: 75.21 minutes.
+Evaluating (EMA + TTA)...
+Test Set Results:
+  Accuracy: 68.6310
+  AUC-ROC: 0.7474
+  Optimal_Threshold: 0.4887
+  F1: 0.6661
+  Precision: 0.7119
+  Recall (Sensitivity): 0.6259
+  Specificity: 0.7468
+  TP: 6606
+  FP: 2673
+  TN: 7882
+  FN: 3949
+  Test Loss: 0.1531
+[DONE] Edema
+
+
+============================================================
+MERGED TRAINING: Edema
+Sources: 2 datasets
+  - NIH -> target='Edema'
+  - MIMIC -> target='Edema'
+Device: cuda | batch=32 | workers=8 | EMA=0.999
+============================================================
+  [OK] NIH: train=3254 (pos=1627, neg=1627), meta=4D
+  [OK] MIMIC: train=96504 (pos=48252, neg=48252), meta=4D
+Metadata: [4, 4] -> pad to 4D
+Merged: train=99758, val=21490, test=21110
+Balanced 50/50 — no pos_weight needed, threshold=0.5 is optimal
+Creating DataLoaders (spawning workers, may take 30-60s on Windows)...
+DataLoaders ready. 3117 train batches, 672 val batches.
+Loading SwinV2-S pretrained weights...
+Model: SwinV2-S + MultiModalFusion (vision=768D, meta=4D) [channels_last]
+Running CUDA warmup batch (cuDNN benchmarking, ~1-3 min)...
+CUDA warmup complete. Starting training loop.
+Backbone FROZEN for 2 epochs (head warmup)
+Epoch 01/25 | Train Loss: 0.1637 | Val Loss: 0.1547 | 5.3min/epoch | Elapsed: 5min | ETA: 127min
+  [+] Val loss improved. EMA model saved.
+Epoch 02/25 | Train Loss: 0.1607 | Val Loss: 0.1531 | 4.9min/epoch | Elapsed: 10min | ETA: 113min
+  [+] Val loss improved. EMA model saved.
+Backbone UNFROZEN — full fine-tuning
+Epoch 03/25 | Train Loss: 0.1573 | Val Loss: 0.1465 | 13.0min/epoch | Elapsed: 23min | ETA: 287min
+  [+] Val loss improved. EMA model saved.
+Epoch 04/25 | Train Loss: 0.1551 | Val Loss: 0.1444 | 13.1min/epoch | Elapsed: 36min | ETA: 275min
+  [+] Val loss improved. EMA model saved.
+Epoch 05/25 | Train Loss: 0.1539 | Val Loss: 0.1434 | 13.1min/epoch | Elapsed: 49min | ETA: 262min
+  [+] Val loss improved. EMA model saved.
+Epoch 06/25 | Train Loss: 0.1531 | Val Loss: 0.1430 | 13.1min/epoch | Elapsed: 63min | ETA: 249min
+  [+] Val loss improved. EMA model saved.
+Epoch 07/25 | Train Loss: 0.1528 | Val Loss: 0.1425 | 13.1min/epoch | Elapsed: 76min | ETA: 236min
+  [+] Val loss improved. EMA model saved.
+Epoch 08/25 | Train Loss: 0.1522 | Val Loss: 0.1421 | 13.1min/epoch | Elapsed: 89min | ETA: 223min
+  [+] Val loss improved. EMA model saved.
+Epoch 09/25 | Train Loss: 0.1517 | Val Loss: 0.1419 | 13.1min/epoch | Elapsed: 102min | ETA: 209min
+  [+] Val loss improved. EMA model saved.
+Epoch 10/25 | Train Loss: 0.1512 | Val Loss: 0.1418 | 13.1min/epoch | Elapsed: 115min | ETA: 196min
+  [+] Val loss improved. EMA model saved.
+Epoch 11/25 | Train Loss: 0.1507 | Val Loss: 0.1415 | 13.1min/epoch | Elapsed: 128min | ETA: 183min
+  [+] Val loss improved. EMA model saved.
+Epoch 12/25 | Train Loss: 0.1506 | Val Loss: 0.1414 | 13.1min/epoch | Elapsed: 141min | ETA: 170min
+  [+] Val loss improved. EMA model saved.
+Epoch 13/25 | Train Loss: 0.1503 | Val Loss: 0.1410 | 13.0min/epoch | Elapsed: 154min | ETA: 156min
+  [+] Val loss improved. EMA model saved.
+Epoch 14/25 | Train Loss: 0.1494 | Val Loss: 0.1411 | 13.1min/epoch | Elapsed: 167min | ETA: 144min
+  [-] No improvement for 1 epochs.
+Epoch 15/25 | Train Loss: 0.1490 | Val Loss: 0.1413 | 13.1min/epoch | Elapsed: 180min | ETA: 131min
+  [-] No improvement for 2 epochs.
+Epoch 16/25 | Train Loss: 0.1488 | Val Loss: 0.1414 | 13.1min/epoch | Elapsed: 193min | ETA: 117min
+  [-] No improvement for 3 epochs.
+Epoch 17/25 | Train Loss: 0.1487 | Val Loss: 0.1414 | 13.1min/epoch | Elapsed: 206min | ETA: 104min
+  [-] No improvement for 4 epochs.
+Epoch 18/25 | Train Loss: 0.1481 | Val Loss: 0.1419 | 13.0min/epoch | Elapsed: 219min | ETA: 91min
+  [-] No improvement for 5 epochs.
+Early stopping after 18 epochs!
+Training Complete. Time: 219.38 minutes.
+Evaluating (EMA + TTA)...
+Test Set Results:
+  Accuracy: 72.3401
+  AUC-ROC: 0.7995
+  Optimal_Threshold: 0.4991
+  F1: 0.7170
+  Precision: 0.7341
+  Recall (Sensitivity): 0.7006
+  Specificity: 0.7462
+  TP: 7395
+  FP: 2679
+  TN: 7876
+  FN: 3160
+  Test Loss: 0.1407
+[DONE] Edema
+
